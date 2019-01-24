@@ -13,8 +13,11 @@ Thank you for downloading Optometrika, enjoy it!
 List of examples:
 
 example1.m: tests the basic functionality of the Optometrika library
+
 example2.m: demonstrates the Optometrika's optical model of the human eye
+
 example3.m: demonstrates accommodation of the human eye by minimizing the retinal image
+
 example4.m: tests a ring lens with the cosine surface profile defined in coslens.m
 example5.m: tests planar mirrors
 example6.m: tests planar and parabolic mirrors (a Newtonian refractor telescope)
