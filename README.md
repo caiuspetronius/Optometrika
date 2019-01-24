@@ -2,6 +2,8 @@
 
 ![optometrika](https://user-images.githubusercontent.com/46988982/51661552-0c009200-1f66-11e9-8d38-79f35f6ac8d8.png)
 
+## Overview
+
 Optometrika MATLAB library implements analytical and iterative ray tracing approximation to optical image formation using Snell’s and Fresnel’s laws of refraction and reflection.
 
 Currently, the library implements refractive and reflective general surfaces, aspheric (conic) surfaces with astigmatism, Fresnel surfaces, cones and cylinders (elliptic too), planes, circular and ring-shaped apertures, rectangular flat screens, spheroidal screens, and a realistic model of the human eye with accommodating lens and spheroidal retina. See example*.m files for examples of ray tracing in general (user-defined shape) lenses, aspheric lenses, Fresnel lenses, prisms, mirrors, and human eye. 
