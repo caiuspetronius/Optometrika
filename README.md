@@ -28,11 +28,18 @@ example7.m: tests a Fresnel lens
 
 example8.m: tests a lens with polynomial aspheric terms
 
-example9.m: tests cone mirrors.
-example10.m: tests cylinder and cone surfaces with double refraction.
+example9.m: tests cone mirrors
+
+example10.m: tests cylinder and cone surfaces with double refraction
+
 example11.m: demonstrates ray tracing for rays originating inside the human eye
+
 example12.m: draws a lens and determines its front surface, back surface, and total height. Makes an animated gif of the lens and an engineering drawing of the lens.
+
 example13.m: tests refraction through the lens edge and backward rays refraction (sub-aperture Maksutov-Cassegrain telescope)
+
 example14.m: tests refraction through a lens with astigmatism (different vertical and horizontal radii of curvature)
+
 example15.m: simulates a hexagonal array of spherical micro lenses
+
 example16.m: demonstrates STL export of various lenses
