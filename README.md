@@ -19,12 +19,17 @@ example2.m: demonstrates the Optometrika's optical model of the human eye
 example3.m: demonstrates accommodation of the human eye by minimizing the retinal image
 
 example4.m: tests a ring lens with the cosine surface profile defined in coslens.m
+
 example5.m: tests planar mirrors
+
 example6.m: tests planar and parabolic mirrors (a Newtonian refractor telescope)
+
 example7.m: tests a Fresnel lens
+
 example8.m: tests a lens with polynomial aspheric terms
-example9.m: tests cone mirrors
-example10.m: tests cylinder and cone surfaces with double refraction
+
+example9.m: tests cone mirrors.
+example10.m: tests cylinder and cone surfaces with double refraction.
 example11.m: demonstrates ray tracing for rays originating inside the human eye
 example12.m: draws a lens and determines its front surface, back surface, and total height. Makes an animated gif of the lens and an engineering drawing of the lens.
 example13.m: tests refraction through the lens edge and backward rays refraction (sub-aperture Maksutov-Cassegrain telescope)
