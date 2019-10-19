@@ -15,7 +15,7 @@ d = D - 28;  % distance to the convex mirror
 % add optical elements in the order they are encountered by light rays
 
 % back surface of the convex mirror
-mirror1 = Lens( [ d 0 0 ], hD, -90, 0, { 'mirror' 'air' } ); % pay attention to the glass order here!
+mirror1 = Lens( [ d 0 0 ], hD, -90, -1.1, { 'mirror' 'air' } ); % pay attention to the glass order here!
 bench.append( mirror1 );
 
 % spherical mirror
@@ -32,7 +32,7 @@ bench.append( cylin );
 bench.append( lens2 );
 
 % front surface of the convex mirror
-mirror3 = Lens( [ d 0 0 ], hD, -90, 0, { 'mirror' 'air' } ); % pay attention to the glass order here!
+mirror3 = Lens( [ d 0 0 ], hD, -90, -1.1, { 'mirror' 'air' } ); % pay attention to the glass order here!
 bench.append( mirror3 );
 
 % meniscus lens on the way from convex mirror to the screen
