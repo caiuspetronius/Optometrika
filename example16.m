@@ -8,6 +8,11 @@ function example16()
 nAngles = 100; % angular resolution of the STL export
 flangeHeight = 2;
 
+% ordianry lens
+lens1 = Lens( [ 0 0 0 ], 58, 40, -1, { 'air' 'bk7' } ); % front lens surface
+lens2 = Plane( [ 0 0 0 ], 58, { 'bk7' 'air' } ); % back lens surface
+export_stl( lens1, lens2, 15, nAngles, [ flangeHeight flangeHeight ], 'semi-planar.stl' );
+
 % polynomially aspheric lens
 lens1 = AsphericLens( [ 0 0 0 ], 31, 80, 0, [ 0 -1e-05 3e-07 ], { 'air' 'pmma' } ); % front lens surface
 lens2 = AsphericLens( [ 0 0 0 ], 31, -10, -2, [ 0 -2e-05 2e-07 ], { 'pmma' 'air' } ); % back lens surface

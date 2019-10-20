@@ -31,7 +31,7 @@ else
     end
     tg = sign( R ) * s ./ c;
     for i = 4 : length( args ) % add higher aspherical derivatives to the conic derivative
-        ii = i - 2;
+        ii = i - 3;
         tg = tg + args( i ) * 2 * ii .* r.^( 2 * ii - 1 );
     end
     c = 1 ./ sqrt( 1 + tg.^2 ); % component along the ray direction, always positive

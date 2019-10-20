@@ -44,6 +44,8 @@ if isprop( lens1, 'R' ) && ~isempty( lens1.R )
     if isprop( lens1, 'avec' ) && ~isempty( lens1.avec )
         pars1 = [ pars1 lens1.avec( :, 1 )' ];
     end
+else
+    pars1 = [ Inf Inf 0 ]; % planar surface 
 end
 
 if isprop( lens2, 'R' ) && ~isempty( lens2.R )
@@ -55,6 +57,8 @@ if isprop( lens2, 'R' ) && ~isempty( lens2.R )
     if isprop( lens2, 'avec' ) && ~isempty( lens2.avec )
         pars2 = [ pars2 lens2.avec( :, 1 )' ];
     end
+else
+    pars2 = [ Inf Inf 0 ]; % planar surface 
 end
 
 r = [ 0 centerThickness ];
@@ -65,7 +69,11 @@ for i = 1 : nang
     if ~isprop( lens1, 'ncones' ) % a non-Fresnel lens
         y1 = Y1;
         if ~isprop( lens1, 'funch' ) % not a general lens
-            p1 = asphlens( Y1 * cs, Y1 * sn, pars1, 0 );
+            if isinf( pars1(1) ) && isinf( pars1(2) ) % a plane
+                p1 = zeros( size( Y1 ) );
+            else
+                p1 = asphlens( Y1 * cs, Y1 * sn, pars1, 0 );
+            end
         else
             p1 = lens1.funch( Y1 * cs, Y1 * sn, lens1.funca, 0 );
         end
@@ -76,7 +84,11 @@ for i = 1 : nang
     if ~isprop( lens2, 'ncones' ) % a non-Fresnel lens
         y2 = Y2;
         if ~isprop( lens2, 'funch' ) % not a general lens
-            p2 = asphlens( Y2 * cs, Y2 * sn, pars2, 0 );
+            if isinf( pars2(1) ) && isinf( pars2(2) ) % a plane
+                p2 = zeros( size( Y2 ) );
+            else
+                p2 = asphlens( Y2 * cs, Y2 * sn, pars2, 0 );
+            end
         else
             p2 = lens1.funch( Y2 * cs, Y2 * sn, lens2.funca, 0 );
         end

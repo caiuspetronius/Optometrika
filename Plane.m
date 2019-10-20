@@ -7,7 +7,7 @@ classdef Plane < Surface
     % p = Plane( r, D, glass ) - circular planar surface constructor
     % INPUT:
     % r - 1x3 position vector
-    % D - surface diameter
+    % D - diameter, 1x1 vector (outer) or 2x1 vector (inner, outer)
     % glass - 1 x 3 cell array of two strings, e.g., { 'air' 'acrylic' }
     % OUTPUT:
     % p - plane object
@@ -36,7 +36,7 @@ classdef Plane < Surface
     properties
         w = []   % width of the surface
         h = []   % height of the surface
-        D = []   % diameter of the surface
+        D = []   % lens diameter (inner, outer)
     end
     
     methods
@@ -45,7 +45,14 @@ classdef Plane < Surface
                 return;
             elseif nargin == 3
                 self.r = varargin{1};
-                self.D = varargin{2};
+                aD = varargin{2};
+                if size( aD, 1 ) < size( aD, 2 )
+                    aD = aD';
+                end
+                if size( aD, 1 ) == 1
+                    aD = [ 0; aD ];
+                end
+                self.D = aD;
                 self.glass = varargin{3};
             elseif nargin == 4
                 self.r = varargin{1};
@@ -63,7 +70,10 @@ classdef Plane < Surface
                 fprintf( 'Width:\t %.3f\n',  self.w );
                 fprintf( 'Height:\t %.3f\n', self.h );
             elseif ~isempty( self.D )
-                fprintf( 'Diameter:\t %.3f\n', self.D );
+                fprintf( 'Diameter:\t %.3f\n', self.D(2) );
+                if self.D(1) ~= 0
+                    fprintf( 'Inner diameter:\t %.3f\n', self.D(1) );
+                end
             end
             fprintf( 'Rotation axis:\t [%.3f %.3f %.3f]\n', self.rotax );
             fprintf( 'Rotation angle:\t %.3f\n',  self.rotang );
