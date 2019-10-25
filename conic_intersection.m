@@ -49,7 +49,6 @@ d( :, 1 ) = ( abs( A ) <= eps ) .* d01 + ... % ray parallel to the paraboloid / 
 d( :, 2 ) = ( abs( A ) <= eps ) .* d02 + ... % ray parallel to the paraboloid / hyperboloid, special case
     ( abs( A ) >  eps ) .* d2;
 
-% find the shortest positive distance to the (two) intersections along the ray
 if a * R < 0 % hyperboloid with positive R, or ellipsoid with negative R: we want to consider only the top branch
     ind = x0 - R / a * ( 1 + sqrt( 1 - a * ( y0.^2 + z0.^2 ) / R^2 ) ) < 0 & e1 >= 0 | ... % forward sources below the bottom branch
           x0 - R / a * ( 1 - sqrt( 1 - a * ( y0.^2 + z0.^2 ) / R^2 ) ) < 0 & e1 < 0; % or backward sources below the top branch
@@ -57,7 +56,7 @@ if a * R < 0 % hyperboloid with positive R, or ellipsoid with negative R: we wan
 elseif a * R > 0 % hyperboloid with negative R, or ellipsoid with positive R: we want to consider only the bottom branch
     ind = x0 - R / a * ( 1 - sqrt( 1 - a * ( y0.^2 + z0.^2 ) / R^2 ) ) > 0 & e1 >= 0 | ... % forward sources above the bottom branch
           x0 - R / a * ( 1 + sqrt( 1 - a * ( y0.^2 + z0.^2 ) / R^2 ) ) > 0 & e1 < 0; % or backward sources above the top branch
-    d( ind, 1 ) = NaN; %realmax; % disregard intersections with the lower branch
+    d( ind, 2 ) = NaN; %realmax; % disregard intersections with the top branch
 end
 d( d <= 1e-12 ) = NaN; %realmax; % intensities for these rays (non-intersecting the surface) will be set to 0 anyway
 
