@@ -101,7 +101,15 @@ classdef Aperture < Surface
                 f = [ 1 2 6 5
                       2 3 7 6
                       3 4 8 7
-                      4 1 5 8 ];               
+                      4 1 5 8 ];
+                  
+                % rotate and shift
+                S = [ v( :, 1 ) v( :, 2 ) v( :, 3 ) ];
+                if self.rotang ~= 0
+                    S = rodrigues_rot( S, self.rotax, self.rotang );
+                end
+                v = S + repmat( self.r, size( v, 1 ), 1 );
+                  
                 % draw
                 h = patch( 'Faces', f, 'Vertices', v, 'EdgeColor', 'none', 'FaceLighting','phong', 'FaceColor', [ .25 .25 .25 ], ...
                       'AmbientStrength', 0.25, 'SpecularStrength', 0.25);
