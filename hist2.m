@@ -36,8 +36,8 @@ if any( size( x ) ~= size( y ) )
     error( 'The size of the two first input vectors should be same!');
 end
 
-[ ~, xbin ] = histc( x, xedges );
-[ ~, ybin ] = histc( y, yedges );
+[ ~, ~, xbin ] = histcounts( x, xedges );
+[ ~, ~, ybin ] = histcounts( y, yedges );
 
 %xbin, ybin zero for out of range values
 % (see the help of histc) force this event to the
@@ -52,8 +52,9 @@ xy = xbin * ynbin + ybin;
 indexshift = ynbin;
 
 [ xyuni, ind ] = unique( xy );
-xyuni( end ) = []; % remove Inf bin
-ind( end ) = [];
+outind = isinf( xyuni );
+xyuni( outind ) = []; % remove Inf bin
+ind( outind ) = [];
 hstres = histc( xy, xyuni );
 if ~isempty( weights )
     hstres = hstres .* weights( ind ); % weigh the histogram
