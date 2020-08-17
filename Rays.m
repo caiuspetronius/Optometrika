@@ -101,6 +101,8 @@ classdef Rays
         att = [];       % a vector of ray attenuations
         color = [];   % color to draw the bundle rays
         cnt = 0;      % number of rays in the bundle
+        opl = [];  % a vector of traced ray optical path length
+        gpl = [];  % a vector of traced ray optical path length
     end
     
     methods            
@@ -311,6 +313,9 @@ classdef Rays
             end
             
             self.att = ones( self.cnt, 1 );
+            
+            self.opl = zeros( self.cnt, 1 );
+            self.gpl = zeros( self.cnt, 1 );
         end
         
             
@@ -336,14 +341,21 @@ classdef Rays
             
             switch class( surf )
                 
-                case { 'Aperture', 'Plane', 'Screen' } % intersection with a plane
+                case { 'Aperture', 'Plane', 'Screen','ScreenWavefront' } % intersection with a plane
                     % distance to the plane along the ray
                     d = dot( repmat( surf.n, self.cnt, 1 ), repmat( surf.r, self.cnt, 1 ) - self.r, 2 ) ./ ...
                         dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 );
                     
+                    
+                     rays_out.opl = self.opl+abs(d.*self.nrefr);
+                     rays_out.gpl = abs(d);
+                     
                     % calculate intersection vectors and normals
                     rinter = self.r + repmat( d, 1, 3 ) .* self.n;
                     nrms = repmat( surf.n, self.cnt, 1 );
+                    
+
+                    
                     
                     % bring surface to the default position
                     rtr = rinter - repmat( surf.r, self.cnt, 1 );
@@ -357,6 +369,8 @@ classdef Rays
                         wrong_dir = dot( nrms * sign( surf.R(1) ), self.n, 2 ) < 0;
                         self.I( wrong_dir ) = 0; % zero for the rays that point away from the screen for the image formation
                         rays_out.r( wrong_dir, : ) = Inf * rays_out.r( wrong_dir, : );
+                        rays_out.opl( wrong_dir, : ) = NaN;                     
+                        rays_out.gpl( wrong_dir, : ) = NaN; 
                         
                         surf.image = hist2( rtr( :, 2 ), rtr( :, 3 ), self.I, ...
                             linspace( -surf.w/2, surf.w/2, surf.wbins ), ...
@@ -364,6 +378,23 @@ classdef Rays
                         surf.image = flipud( surf.image ); % to get from matrix to image form
                         surf.image = fliplr( surf.image ); % because y-axis points to the left
                     end
+                    
+                    if isa( surf, 'ScreenWavefront' ) % calculate retinal image
+                        wrong_dir = dot( nrms * sign( surf.R(1) ), self.n, 2 ) < 0;
+                        self.I( wrong_dir ) = 0; % zero for the rays that point away from the screen for the image formation
+                        rays_out.r( wrong_dir, : ) = Inf * rays_out.r( wrong_dir, : );
+                        rays_out.opl( wrong_dir, : ) = NaN;                     
+                        rays_out.gpl( wrong_dir, : ) = NaN; 
+                        
+                        
+                        surf.raw = [rtr( :, 2 ), rtr( :, 3 ), rays_out.opl];
+                        surf.image = hist2mean( rtr( :, 2 ), rtr( :, 3 ), rays_out.opl, ...
+                            linspace( -surf.w/2, surf.w/2, surf.wbins ), ...
+                            linspace( -surf.h/2, surf.h/2, surf.hbins ) );
+                        surf.image = flipud( surf.image ); % to get from matrix to image form
+                        surf.image = fliplr( surf.image ); % because y-axis points to the left
+                    end
+                    
                     
                     % handle rays that miss the element
                     out = [];
@@ -397,6 +428,9 @@ classdef Rays
                     % intersection between rays and the surface, also returns surface normals at the intersections
                     
                     % transform rays into the lens surface RF
+                    
+
+                    
                     r_in = self.r - repmat( surf.r, self.cnt, 1 ); % shift to RF with surface origin at [ 0 0 ]
                     
                     if surf.rotang ~= 0 % rotate so that the surface axis is along [1 0 0]
@@ -425,7 +459,7 @@ classdef Rays
                                     if fval > 1e-8 % didn't intersect with the surface
                                         outs( i ) = 1;
                                         rinter( i, : ) = Inf;
-                                    else
+                                    else                                       
                                         rinter( i, : ) = r_in( i, : ) + e( i, : ) * d;
                                     end
                                 end
@@ -441,10 +475,11 @@ classdef Rays
                                         rinter( i, : ) = Inf;
                                     else
                                         rinter( i, : ) = r_in( i, : ) + e( i, : ) * d;
+                                        
                                     end
                                 end
                             end
-                        end
+                        end % optimisation toolbox
                         
                         % get surface normals at the intersection points
                         en = surf.funch( rinter( :, 2 ), rinter( :, 3 ), surf.funca, 1 );
@@ -619,7 +654,7 @@ classdef Rays
                         
 %                         figure, plot3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), '*' ), hold on, ...
 %                         quiver3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), en( :, 1 ), en( :, 2 ), en( :, 3 ), 5 ), axis equal vis3d;
-                                                
+                      
                     elseif isa( surf, 'ConeLens' ) % cone lens
                         % find intersections
                         rinter = Inf * ones( self.cnt, 3 ); % init intersection vectors
@@ -631,7 +666,7 @@ classdef Rays
                         s = sin( surf.the );
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = sign( surf.the ) * [ s * ones( size( th ) ), -c * cos( th ), -c * sin( th ) ]; % make normal sign positive wrt ray
-                        
+                                                
                     elseif isa( surf, 'CylinderLens' )
                         % find intersection
                         rinter = Inf * ones( self.cnt, 3 ); % init intersection vectors
@@ -642,8 +677,11 @@ classdef Rays
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = [ zeros( size( th ) ), cos( th ), sin( th ) ];
                         
+                        %TODO: gpl, opl not implemented
+                        
                     else % conic lens
-                        rinter = conic_intersection( r_in, e, surf );
+                        [rinter,d] = conic_intersection( r_in, e, surf );                        
+                        
                         % find normals
                         r2yz = ( rinter( :, 2 ).^2 + rinter( :, 3 ).^2 ) / surf.R(1)^2; % distance to the lens center along the lens plane in units of lens R
                         if surf.k == -1 % parabola, special case
@@ -734,6 +772,10 @@ classdef Rays
                 otherwise
                     error( [ 'Surface ' class( surf ) ' is not defined!' ] );
             end
+            
+          rays_out.gpl =  vecnorm(self.r - rays_out.r,2,2);
+          rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
+            
         end
          
         
@@ -770,7 +812,7 @@ classdef Rays
 
             % calculate refraction
             switch( class( surf ) )
-                case { 'Aperture', 'Screen', 'Retina' } 
+                case { 'Aperture', 'Screen', 'Retina','ScreenWavefront' } 
                 case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Lens' }
                     % calculate refraction (Snell's law)
 
@@ -844,7 +886,9 @@ classdef Rays
             rc.nrefr = self.nrefr;    % a vector of current refractive indices
             rc.att = self.att;       % a vector of ray attenuations
             rc.color = self.color;   % color to draw the bundle rays
-            rc.cnt = self.cnt;      % number of rays in the bundle
+            rc.cnt = self.cnt;      % number of rays in the bundle   
+            rc.opl = self.opl;      
+            rc.gpl = self.gpl;     
         end
         
         
@@ -854,6 +898,8 @@ classdef Rays
             self.n = [ self.n; rays.n ];
             self.w = [ self.w; rays.w ];
             self.I = [ self.I; rays.I ];
+            self.opl = [ self.opl; rays.opl ];
+            self.gpl = [ self.gpl; rays.gpl ];
             self.nrefr = [ self.nrefr; rays.nrefr ];
             self.att = [ self.att; rays.att ];
             self.color = [ self.color; rays.color ];
@@ -867,6 +913,8 @@ classdef Rays
             rays.n = self.n( inds, : );
             rays.w = self.w( inds, : );
             rays.I = self.I( inds, : );
+            rays.gpl = self.gpl( inds, : );
+            rays.opl = self.opl( inds, : );
             rays.nrefr = self.nrefr( inds, : );
             rays.att = self.att( inds, : );
             rays.color = self.color( inds, : );
@@ -880,6 +928,8 @@ classdef Rays
             self.n( ind, : ) = [];
             self.w( ind, : ) = [];
             self.I( ind, : ) = [];
+            self.opl( ind, : ) = [];
+            self.gpl( ind, : ) = [];
             self.color( ind, : ) = [];
             self.nrefr( ind, : ) = [];
             self.att( ind, : ) = [];

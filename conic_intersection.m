@@ -1,8 +1,11 @@
-function rinter = conic_intersection( r_in, e, surf )
+
+
+function [rinter, d] = conic_intersection( r_in, e, surf )
 %
 % returns intersection vector with ellipsoid, paraboloid, or hyperboloid
 % surface
 %
+%AS 2020-02-04: Add return of distance for intersection
 
 x0 = r_in( :, 1 );
 y0 = r_in( :, 2 );
