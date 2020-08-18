@@ -10,6 +10,8 @@ bench = Bench;
 
 condition = 'fresnel'; % change to 'smooth' to see the original lens or to 'fresnel-sim' to simulate the original lens with a globally smooth Fresnel surface
 
+
+
 % front lens surface
 % This is the simulated aspheric lens surface
 R = 35; % lens radius of curvature
@@ -72,7 +74,13 @@ bench.draw( rays_through, 'rays' );  % display everything, the other draw option
 figure, imshow( screen.image, [ 0 max( max( screen.image ) ) ] );
 
 % draw the lens for manufacturing
-[ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR', 'Fresnel', lens1 );
+
+if strcmp( condition, 'fresnel' )
+    [ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR', 'Fresnel', lens1 );
+else
+    [ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR'); 
+end
+
 fprintf( 'Engineering drawing saved\n' );
 save lens_profile.mat pr;
 
