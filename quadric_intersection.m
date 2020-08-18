@@ -61,6 +61,7 @@ D( D < 0 ) = 0; % remove round off negative Ds
 t1 = 0.5 * ( -b - sqrt( D ) ) ./ a;
 t2 = 0.5 * ( -b + sqrt( D ) ) ./ a;
 
-r1 = r0 + n .* t1;
-r2 = r0 + n .* t2;
+dims = size(n);
+r1 = r0 + n .* repmat(t1,1,dims(2));
+r2 = r0 + n .* repmat(t2,1,dims(2));
 

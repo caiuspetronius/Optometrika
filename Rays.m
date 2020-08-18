@@ -506,8 +506,9 @@ classdef Rays
                             else % quadric surface
                                 ring.k = surf.k( i );
                                 ring.R = surf.R( i, 1 );
-                                rin = [ surf.vx( i ) + surf.sag( i ), 0, 0 ] + ...
-                                        conic_intersection( r_in - [ surf.vx( i ) + surf.sag( i ), 0, 0 ], e, ring );
+                                dims = size(r_in);
+                                rin = repmat([ surf.vx( i ) + surf.sag( i ), 0, 0 ],dims(1),1) + ...
+                                conic_intersection( r_in - repmat([ surf.vx( i ) + surf.sag( i ), 0, 0 ],dims(1),1), e, ring );
                                 r2 = rin( :, 2 ).^2 + rin( :, 3 ).^2;
                                 in = r2 >= radin.^2 & r2 < surf.rad( i, 2 ).^2;
                                 if sum( in ) == 0
