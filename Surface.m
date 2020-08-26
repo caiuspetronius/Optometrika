@@ -42,7 +42,8 @@ classdef Surface < handle
             self.rotax = rot_axis;
             self.rotang = self.rotang + rot_angle;
             self.n = rodrigues_rot( self.n, rot_axis, rot_angle );
-            if abs( self.rotang ) > pi/2
+            if abs( self.rotang ) > pi/2 && ...
+                    ~(isa(self,'Screen') || isa(self,'ScreenWavefront'))
                 self.rotang = self.rotang - sign( self.rotang ) * pi;
                 self.R = -self.R;  % surface upside-down
                 self.glass = fliplr( self.glass ); % change material ordering
