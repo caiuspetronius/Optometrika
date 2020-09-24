@@ -393,7 +393,7 @@ classdef Rays
                             case 'opl'
                                 z= rays_out.opl;
                             case 'tilt'
-                                z= 1-dot( nrms * sign( surf.R(1) ), self.n, 2 );
+                                z= acos(dot( nrms * sign( surf.R(1) ), self.n, 2 ));
                         end
                         
                         surf.raw = [rtr( :, 2 ), rtr( :, 3 ), z];
@@ -860,11 +860,14 @@ classdef Rays
                         rp = ( cs1 - rn .* cs2 ) ./ ( cs1 + rn .* cs2 );
                         refraction_loss = ( abs( rs ).^2 + abs( rp ).^2 ) / 2;
                         % handle total internal reflection
-                        tot = imag( cs2 ) ~= 0;
+                        tot = find(imag( cs2 ) ~= 0);
                         % rays_out.n( tot, : ) = 0; % zero direction for such rays
-                        rays_out.n( tot, : ) = self.n( tot, : ) - 2 * repmat( tmp( tot ), 1, 3 ) .* nrms( tot, : ); % Snell's law of reflection
-                        refraction_loss( tot ) = 0; %1;
-                        rays_out.nrefr( tot ) = refrindx( self.w( tot ), med1 ); % refractive index before the surface
+                        if(~isempty(tot))   
+                            rays_out.n( tot, : ) = self.n( tot, : ) - 2 * repmat( tmp( tot ), 1, 3 ) .* nrms( tot, : ); % Snell's law of reflection
+                            refraction_loss( tot ) = 0; %1;
+                            rays_out.nrefr( tot ) = refrindx( self.w( tot ), med1 ); % refractive index before the surface
+                        end
+                        
                         rays_out.I( ~miss ) = ( 1 - refraction_loss( ~miss ) ) .* rays_out.I( ~miss ); % intensity of the outcoming rays
                     end                     
                 otherwise
