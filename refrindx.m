@@ -56,8 +56,12 @@ if ~isempty( ind )
         A(3) * lambda.^2 ./ ( lambda.^2 - B(3) ) );
 else
     switch lower( glass )
-        case 'air'
+        case 'vacuum'
             nref = [ 1 1 1 ];
+            dens = 0;
+            hard = 0;
+        case 'air'
+            nref = [ 1 1 1 ]*1.00027717;
             dens = 0.001225;
             hard = 0;
         case 'water'

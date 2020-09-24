@@ -15,7 +15,7 @@ classdef Surface < handle
         r = [ 0 0 0 ];  % location vector
         R = [];       % radius of the tangent sphere
         k = [];         % conic constant
-        glass  = { 'air' 'air' }; % material in front and behind the surface
+        glass  = { 'vacuum' 'vacuum' }; % material in front and behind the surface
     end
     
     properties ( SetAccess = private )
