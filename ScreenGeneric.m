@@ -1,6 +1,9 @@
-classdef ScreenWavefront < Surface
-    % SCREENWAVEFRONT implements a rectangular screen surface
-    % It evaluates optical (OPL) and geometrical path lengths (GPL) of rays.
+classdef ScreenGeneric < Surface
+    % SCREENGENERAL implements a rectangular screen surface
+    % Type defines the data recorded by the screen:
+    % 'opl' - Total Optical Path Length (mm)
+    % 'wf' - Wavefront Deviation (lambda)
+    % 'tilt' - Wavefront Angle (rad)
     %
     % Member functions:
     %
@@ -33,11 +36,11 @@ classdef ScreenWavefront < Surface
         wbins = 128; % number of bins along x-axis
         image = []; % image on the screen
         raw = [];
-        wl = 0;
+        type='opl';
     end
     
     methods
-        function self = ScreenWavefront( ar, aw, ah, awbins, ahbins,wl )
+        function self = ScreenGeneric( ar, aw, ah, awbins, ahbins,atype )
             if nargin == 0
                 return;
             end
@@ -48,10 +51,7 @@ classdef ScreenWavefront < Surface
             self.w = aw;
             self.hbins = round( ahbins );
             self.wbins = round( awbins );
-            
-            if exist('wl','var')
-              self.wl = wl; %ray wavelengths for plots  
-            end
+            self.type = atype;
             
         end
         
@@ -77,42 +77,58 @@ classdef ScreenWavefront < Surface
            xii = linspace( -self.w/2, self.w/2, self.wbins );
            yii = linspace( -self.h/2, self.h/2, self.hbins );
            [xi,yi] = meshgrid(xii,yii);
-           z = self.raw(:,3)-min(self.raw(:,3));   
+           z = self.raw(:,3);   
            isValid = ~isnan(vecnorm(self.raw,2,2));
            zi =griddata(self.raw(isValid,1),self.raw(isValid,2),z(isValid),xi,yi); 
-           figure();
-           surf(xi,yi,zi);hold on;
+           hndl =  surf(xi,yi,zi);hold on;
            %plot3(self.raw(:,1),self.raw(:,2),z,'.');
-           xlabel('Position X [mm]');ylabel('Position Y [mm]');zlabel('Wavefront [mm]');
-           title('Surf Wavefront');
+           xlabel('Position X (mm)');ylabel('Position Y (mm)');
+           
+           switch self.type
+               case 'opl' 
+                   title('Optical Pathlength');zlabel('Optical Pathlength (mm)');
+               case 'wf' 
+                   title('Surf Wavefront');zlabel('Wavefront (lambda)');
+               case 'tilt' 
+                   title('Tilt');zlabel('Beam Tilt(rad)'); 
+               otherwise 
+                   zlabel('Wavefront (mm)');
+           end
+           
            view(2);    
         end
         
- function hndl = plot3(self) 
+    function hndl = plot3(self) 
            xii = linspace( -self.w/2, self.w/2, self.wbins );
            yii = linspace( -self.h/2, self.h/2, self.hbins );
            [xi,yi] = meshgrid(xii,yii);
-           z = self.raw(:,3)-min(self.raw(:,3)); 
+           z = self.raw(:,3);           
+           isValid = ~isnan(vecnorm(self.raw,2,2));        
            
-           if (self.wl ~=0)
-               z = (z/1000)./self.wl;
-           end
-           
-           isValid = ~isnan(vecnorm(self.raw,2,2));
            zi =griddata(self.raw(isValid,1),self.raw(isValid,2),z(isValid),xi,yi);
-
+           if sum(isValid)>0 && ~isempty(zi)
+            mesh(xi,yi,zi); hold on;
+            hndl = plot3(self.raw(:,1),self.raw(:,2),z,'.');
            
-            
-           figure();
-           mesh(xi,yi,zi); hold on;
-           plot3(self.raw(:,1),self.raw(:,2),z,'.');
-           xlabel('Position X [mm]');ylabel('Position Y [mm]');    
-           title('Plot3 Wavefront');
-           if (self.wl ~=0)
-                zlabel('Phase shift [\lambda]');
            else
-                zlabel('Wavefront [mm]');
+            dim = [.2 .5 .3 .3];
+            str = 'No data!';
+            annotation('textbox',dim,'String',str,'FitBoxToText','on');  
            end
+           
+           xlabel('Position X [mm]');ylabel('Position Y [mm]');   
+           
+           title('Plot3 Screen');
+           switch self.type
+               case 'opl' 
+                   title('Optical Pathlength');zlabel('Optical Pathlength (mm)');
+               case 'wf' 
+                   title('Surf Wavefront');zlabel('Phase shift (\lambda)');
+               case 'tilt' 
+                   title('Tilt');zlabel('Beam Tilt(rad)'); 
+               otherwise 
+                   zlabel('Wavefront (mm)');
+          end
            
         end       
         

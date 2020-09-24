@@ -1,6 +1,7 @@
-function focal = example17_wavefront()
-% Measure the pathlength variation (OPL) of three different lens types.
-% A. Schultze 2020-08-17
+function example17()
+% Wavefront error example
+% Measure the wavefront mismatch by tracking OPL of three different lens types.
+% A. Schultze 2020-09-24
 
 
 for i=1:3 %each lens type
@@ -36,7 +37,7 @@ bench.append( { lens1, lens2 } );
 screen = Screen( [ 110 0 0 ], 25, 25, 512, 512 );
 bench.append( screen );
 
-screenwf = ScreenWavefront( [ 115 0 0 ], 20, 20, 100, 100,1064e-9 );
+screenwf = ScreenGeneric( [ 115 0 0 ], 20, 20, 100, 100,'wf' ); %other options are 'opl' 'wf' 'tilt'
 bench.append( screenwf );
 
 %bench.rotate( [ 0 0 1 ], 0.15 );
@@ -55,9 +56,11 @@ rays_through = bench.trace( rays_in );    % repeat to get the min spread rays
 
 if i==1
     bench.draw( rays_through, 'lines' );  % display everything, the other draw option is 'lines'
+    figure();
 end
 
 % Wavefront plots
+subplot(2,2,i);
 screenwf.plot3();
 title(['Lens ' num2str(i) ': ' lenses{i}]);
 %screenwf.surf();

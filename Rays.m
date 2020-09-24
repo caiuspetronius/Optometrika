@@ -101,8 +101,8 @@ classdef Rays
         att = [];       % a vector of ray attenuations
         color = [];   % color to draw the bundle rays
         cnt = 0;      % number of rays in the bundle
-        opl = [];  % a vector of traced ray optical path length
-        gpl = [];  % a vector of traced ray optical path length
+        opl = [];  % a vector of summed traced ray optical path length
+        gpl = [];  % a vector of last traced ray geometrical path length
     end
     
     methods            
@@ -341,7 +341,7 @@ classdef Rays
             
             switch class( surf )
                 
-                case { 'Aperture', 'Plane', 'Screen','ScreenWavefront' } % intersection with a plane
+                case { 'Aperture', 'Plane', 'Screen','ScreenGeneric' } % intersection with a plane
                     % distance to the plane along the ray
                     d = dot( repmat( surf.n, self.cnt, 1 ), repmat( surf.r, self.cnt, 1 ) - self.r, 2 ) ./ ...
                         dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 );
@@ -379,7 +379,7 @@ classdef Rays
                         surf.image = fliplr( surf.image ); % because y-axis points to the left
                     end
                     
-                    if isa( surf, 'ScreenWavefront' ) % calculate retinal image
+                    if isa( surf, 'ScreenGeneric' ) % store general info (opl,wf or tilt)
                         wrong_dir = dot( nrms * sign( surf.R(1) ), self.n, 2 ) < 0;
                         self.I( wrong_dir ) = 0; % zero for the rays that point away from the screen for the image formation
                         rays_out.r( wrong_dir, : ) = Inf * rays_out.r( wrong_dir, : );
@@ -387,8 +387,17 @@ classdef Rays
                         rays_out.gpl( wrong_dir, : ) = NaN; 
                         
                         
-                        surf.raw = [rtr( :, 2 ), rtr( :, 3 ), rays_out.opl];
-                        surf.image = hist2mean( rtr( :, 2 ), rtr( :, 3 ), rays_out.opl, ...
+                        switch surf.type
+                            case 'wf'
+                                z= 1/1000*(rays_out.opl-min(rays_out.opl))./self.w; 
+                            case 'opl'
+                                z= rays_out.opl;
+                            case 'tilt'
+                                z= 1-dot( nrms * sign( surf.R(1) ), self.n, 2 );
+                        end
+                        
+                        surf.raw = [rtr( :, 2 ), rtr( :, 3 ), z];
+                        surf.image = hist2mean( rtr( :, 2 ), rtr( :, 3 ), z, ...
                             linspace( -surf.w/2, surf.w/2, surf.wbins ), ...
                             linspace( -surf.h/2, surf.h/2, surf.hbins ) );
                         surf.image = flipud( surf.image ); % to get from matrix to image form
@@ -813,7 +822,7 @@ classdef Rays
 
             % calculate refraction
             switch( class( surf ) )
-                case { 'Aperture', 'Screen', 'Retina','ScreenWavefront' } 
+                case { 'Aperture', 'Screen', 'Retina','ScreenGeneric' } 
                 case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Lens' }
                     % calculate refraction (Snell's law)
 
