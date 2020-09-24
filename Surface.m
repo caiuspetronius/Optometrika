@@ -42,6 +42,17 @@ classdef Surface < handle
             self.rotax = rot_axis;
             self.rotang = self.rotang + rot_angle;
             self.n = rodrigues_rot( self.n, rot_axis, rot_angle );
+        end
+        
+        
+        function rotate_flip( self, rot_axis, rot_angle )
+            if abs( rot_angle ) > pi
+                error( 'Rotation angle should be [ -pi pi ]!' );
+            end
+            % rotate the normal about the rot_axis by rot_angle (radians)
+            self.rotax = rot_axis;
+            self.rotang = self.rotang + rot_angle;
+            self.n = rodrigues_rot( self.n, rot_axis, rot_angle );
             if abs( self.rotang ) > pi/2 && ...
                     ~(isa(self,'Screen') || isa(self,'ScreenWavefront'))
                 self.rotang = self.rotang - sign( self.rotang ) * pi;
