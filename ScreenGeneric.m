@@ -77,6 +77,12 @@ classdef ScreenGeneric < Surface
            xii = linspace( -self.w/2, self.w/2, self.wbins );
            yii = linspace( -self.h/2, self.h/2, self.hbins );
            [xi,yi] = meshgrid(xii,yii);
+
+           if isempty(self.raw)
+               warning('OptoMetrika:ScreenNoData','Screen was not plotted. No data available.');
+               return;
+           end
+
            z = self.raw(:,3);   
            isValid = ~isnan(vecnorm(self.raw,2,2));
            zi =griddata(self.raw(isValid,1),self.raw(isValid,2),z(isValid),xi,yi); 
@@ -102,7 +108,11 @@ classdef ScreenGeneric < Surface
            xii = linspace( -self.w/2, self.w/2, self.wbins );
            yii = linspace( -self.h/2, self.h/2, self.hbins );
            [xi,yi] = meshgrid(xii,yii);
-           z = self.raw(:,3);           
+           if isempty(self.raw)
+               warning('OptoMetrika:ScreenNoData','Screen was not plotted. No data available.');
+               return;
+           end
+           z = self.raw(:,3);
            isValid = ~isnan(vecnorm(self.raw,2,2));        
            
            zi =griddata(self.raw(isValid,1),self.raw(isValid,2),z(isValid),xi,yi);
