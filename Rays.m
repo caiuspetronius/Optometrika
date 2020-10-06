@@ -17,7 +17,7 @@ classdef Rays
     %   D - diameter of the ray bundle (at distance 1 if geometry = 'source' )
     %   pattern - (optional) pattern of rays within the bundle: 'linear' = 'linearY', 'linearZ', 'hexagonal'
     %   'square', 'sphere' or 'random', hexagonal by default
-    %   glass - (optional) material through which rays propagate, 'air' by
+    %   glass - (optional) material through which rays propagate, 'vacuum' by
     % default
     %   wavelength - (optional) wavelength of the ray bundle, meters, 557.7
     % nm by default
@@ -344,11 +344,7 @@ classdef Rays
                 case { 'Aperture', 'Plane', 'Screen','ScreenGeneric' } % intersection with a plane
                     % distance to the plane along the ray
                     d = dot( repmat( surf.n, self.cnt, 1 ), repmat( surf.r, self.cnt, 1 ) - self.r, 2 ) ./ ...
-                        dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 );
-                    
-                    
-                     rays_out.opl = self.opl+abs(d.*self.nrefr);
-                     rays_out.gpl = abs(d);
+                        dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 ); 
                      
                     % calculate intersection vectors and normals
                     rinter = self.r + repmat( d, 1, 3 ) .* self.n;
@@ -437,8 +433,7 @@ classdef Rays
                     % intersection between rays and the surface, also returns surface normals at the intersections
                     
                     % transform rays into the lens surface RF
-                    
-
+                   
                     
                     r_in = self.r - repmat( surf.r, self.cnt, 1 ); % shift to RF with surface origin at [ 0 0 ]
                     
@@ -686,9 +681,7 @@ classdef Rays
                         % find normals
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = [ zeros( size( th ) ), cos( th ), sin( th ) ];
-                        
-                        %TODO: gpl, opl not implemented
-                        
+       
                     else % conic lens
                         [rinter,d] = conic_intersection( r_in, e, surf );                        
                         
@@ -783,9 +776,6 @@ classdef Rays
                     error( [ 'Surface ' class( surf ) ' is not defined!' ] );
             end
             
-          rays_out.gpl =  vecnorm(self.r - rays_out.r,2,2);
-          rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
-            
         end
          
         
@@ -796,11 +786,23 @@ classdef Rays
             % find intersections and set outcoming rays starting points
             [ rays_out, nrms ] = self.intersection( surf );
             
+           %gpl1= dot( rays_out.r-self.r, self.n, 2 );
+          rays_out.gpl =  dot( rays_out.r-self.r, self.n, 2 );
+          rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
+            
+            
             miss = rays_out.I < 0; % indices of the rays
+            
+            rays_out.gpl(miss)=NaN;
 %             opposite = dot( self.n, nrms, 2 ) < 0;
 %             rays_out.I( opposite) = 0; % 
             med1 = surf.glass{1};
             med2 = surf.glass{2};
+            
+            % Check the refractive index is correct
+            if ~(self.nrefr == refrindx( self.w, med1 ))
+                warning('OptoMetrika:refrIndexMismatch','Refractive Index of Ray and Optical element mismatch. Was changed to Value expected at element entry.');
+            end
             
             % determine refractive indices before and after the surface 
             cs1 = dot( nrms, self.n, 2 ); % cosine between the ray direction and the surface direction
