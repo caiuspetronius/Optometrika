@@ -192,7 +192,7 @@ classdef Eye < Bench
             
             % pupil
             % pupil = Aperture( [ self.Pupilx 0 0 ], [ self.PupilD, self.PupilDout, 1000 ] ); % the third diameter is the one actually used for tracing, the second just to draw
-            pupil = Lens( [ self.Pupilx 0 0 ], [ self.PupilD, -1.77*self.RetinaR ], -self.RetinaR, self.Retinak, { 'cornea' 'soot' } ); % pupil extends around the retina to simulate the opaque choroid
+            pupil = Lens( [ self.Pupilx 0 0 ], [ self.PupilD, -1.77*self.RetinaR ], -self.RetinaR, self.Retinak, { 'aqueous' 'soot' } ); % pupil extends around the retina to simulate the opaque choroid
             self.cnt = self.cnt + 1;
             self.elem{ self.cnt } = pupil;
             

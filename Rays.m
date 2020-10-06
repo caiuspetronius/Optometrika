@@ -136,7 +136,7 @@ classdef Rays
                 self.w = wavelength;
             end
             if nargin < 7 || isempty( glass )
-                glass = 'air';
+                glass = 'vacuum';
             end
             if nargin < 6 || isempty( rflag )
                 rflag = 'hexagonal'; % hexagonal lattice of rays
@@ -800,7 +800,8 @@ classdef Rays
             med2 = surf.glass{2};
             
             % Check the refractive index is correct
-            if ~(self.nrefr == refrindx( self.w, med1 ))
+            if ~(self.nrefr == refrindx( self.w, med1 )) & ...
+                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' )
                 warning('OptoMetrika:refrIndexMismatch','Refractive Index of Ray and Optical element mismatch. Was changed to Value expected at element entry.');
             end
             
@@ -809,7 +810,7 @@ classdef Rays
             opp_rays = cs1 < 0; %self.nrefr == refrindx( self.w, med2 ); %cs1 < 0; % rays hitting the surface from the opposite direction          
             old_refr( ~opp_rays ) = refrindx( self.w( ~opp_rays ), med1 ); % refractive index before the surface
             old_refr(  opp_rays ) = refrindx( self.w(  opp_rays ), med2 ); % refractive index before the surface
-            if strcmp( med2, 'mirror' )
+            if strcmp( med2, 'mirror' ) || strcmp( med2, 'soot' )
                 new_refr = refrindx( self.w, med1 ); % refractive index after the surface
             elseif  strcmp( med1, 'mirror' )
                 new_refr = refrindx( self.w, med2 ); % refractive index after the surface
