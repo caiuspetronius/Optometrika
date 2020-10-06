@@ -60,6 +60,7 @@ classdef Plane < Surface
                 self.h = varargin{3};
                 self.glass = varargin{4};
             end
+                     
         end
                 
         function display( self )
@@ -114,8 +115,9 @@ classdef Plane < Surface
             
             % draw
             c = repmat( reshape( color( 1:3 ), [ 1 1 3 ] ), size( x, 1 ), size( x, 2 ), 1 );
+            %color(4) = 1;
             h = surf( x, y, z, c, ...
-                'EdgeColor', 'none', 'FaceLighting','phong', 'FaceColor', 'interp', 'FaceAlpha', color(4), ...
+                'EdgeColor', 'none', 'FaceLighting','phong', 'FaceColor', color( 1:3 ), 'FaceAlpha', color(4), ...
                 'AmbientStrength', 0., 'SpecularStrength', 1 ); % grey color, shiny
         end
         
