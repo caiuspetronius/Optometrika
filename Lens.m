@@ -54,7 +54,7 @@
             self.k = ak;
             self.glass = aglass;
             if ( self.D(2) / 2 / self.R(1) )^2 * ( 1 + self.k ) > 1
-                % error( 'Lens Diameter is too large for its radius and apsheric parameter!' );
+                warning('Lens Diameter is too large for its radius and apsheric parameter!' );
                 self.D(1) = -1; % signal bad parameters
             end
         end
@@ -94,7 +94,7 @@
                 if a == 0 % paraboloid, special case
                     x = r2yz * self.R / 2;
                 else
-                    x = self.R * r2yz ./ ( 1 + sqrt( 1 - a * r2yz ) );
+                    x = self.R * r2yz ./ ( 1 + real(sqrt( 1 - a * r2yz )) );
                 end
             else % asymmetric conic
                 r2yz = y.^2 / self.R(1) + z.^2 / self.R(2);
