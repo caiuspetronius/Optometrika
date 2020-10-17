@@ -139,7 +139,14 @@ classdef Bench < handle
             
             if new_figure_fl == 1
                 fname = dbstack;  % get debugging info
-                [ ~, fname ] = fname.name; % get the second (original) call function name
+                
+                if length(fname)>1
+                    [ ~, fname ] = fname.name; % get the second (original) call function name
+                else
+                    fname ='';
+                end
+                
+                
                 figure( 'Name', [ 'OPTOMETRIKA: ' fname ], 'NumberTitle', 'Off', ...
                     'Position', [ 0 0 1024 1024 ], ...
                     'Color', 'k' );
