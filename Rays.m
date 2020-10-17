@@ -429,7 +429,7 @@ classdef Rays
                         rays_out.I( ~out ) = 0; % block the rays
                     end
                     
-                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Lens' 'Retina' } % intersection with a conical surface of rotation
+                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Lens' 'Sphere' 'Retina' } % intersection with a conical surface of rotation
                     % intersection between rays and the surface, also returns surface normals at the intersections
                     
                     % transform rays into the lens surface RF
@@ -682,8 +682,15 @@ classdef Rays
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = [ zeros( size( th ) ), cos( th ), sin( th ) ];
        
+                    elseif isa( surf, 'Sphere' )   
+                        [rinter] = sphere_intersection( r_in, e, surf );  
+                        
+
+                        en =  rinter ;   % normal vector coincident with
+                                         % intersection position
+                        
                     else % conic lens
-                        [rinter,d] = conic_intersection( r_in, e, surf );                        
+                        [rinter] = conic_intersection( r_in, e, surf );                        
                         
                         % find normals
                         r2yz = ( rinter( :, 2 ).^2 + rinter( :, 3 ).^2 ) / surf.R(1)^2; % distance to the lens center along the lens plane in units of lens R
@@ -722,8 +729,8 @@ classdef Rays
                                     linspace( -md, md, surf.azbins ), ...
                                     linspace( -md, md, surf.elbins ) );
                             end
-                        end
-                    end
+                        end %is a retina
+                    end %is general lens, aspheric lens,..
                                         
                     % handle rays that miss the element
                     out = [];
@@ -826,7 +833,7 @@ classdef Rays
             % calculate refraction
             switch( class( surf ) )
                 case { 'Aperture', 'Screen', 'Retina','ScreenGeneric' } 
-                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Lens' }
+                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Sphere' 'Lens' }
                     % calculate refraction (Snell's law)
 
                     inside_already = ( ~miss ) & ( abs( rays_out.nrefr - old_refr ) > 1e-12 ); % rays that are already inside the surface (entered it previously)
