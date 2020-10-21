@@ -387,7 +387,7 @@ function rays = trace_recursive( self, rays_in, out_fl )
                 
                 %avoid the current element(distance = 0)
                 % and elements in negative direction (distance < 0)
-                gpl(gpl <0) = NaN;
+                gpl(gpl < 100*eps) = NaN;
                 
                 [~,indx]=min(gpl,[],2);
 
