@@ -686,8 +686,9 @@ classdef Rays
                         [rinter] = sphere_intersection( r_in, e, surf );  
                         
 
-                        en =  rinter ;   % normal vector coincident with
-                                         % intersection position
+                        en =  rinter ;  
+                        % normal vector coincident with
+                         % intersection position
                         
                     else % conic lens
                         [rinter] = conic_intersection( r_in, e, surf );                        
@@ -808,7 +809,7 @@ classdef Rays
             
             % Check the refractive index is correct
             if ~(self.nrefr == refrindx( self.w, med1 )) & ...
-                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' )
+                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ~isa( surf, 'Aperture' )
                 warning('OptoMetrika:refrIndexMismatch','Refractive Index of Ray and Optical element mismatch. Was changed to Value expected at element entry.');
             end
             
