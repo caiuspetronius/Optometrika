@@ -56,12 +56,12 @@ if ~isempty( ind )
         A(3) * lambda.^2 ./ ( lambda.^2 - B(3) ) );
 else
     switch lower( glass )
-        case 'vacuum'
-            nref = [ 1 1 1 ];
+        case {'vacuum' 'mirror' 'soot'}
+            nref = [1];
             dens = 0;
             hard = 0;
         case 'air'
-            nref = [ 1 1 1 ]*1.00027717;
+            nref = [1.00027717 1.00027951 1.00027625];
             dens = 0.001225;
             hard = 0;
         case 'water'
@@ -80,8 +80,6 @@ else
             nref = [ 2.4168 2.4305 2.4088 ];
             dens = 3.51;
             hard = 10;
-        case { 'mirror' 'soot' } 
-            nref = [ 1 1 1 ];
         % plastics
         case { 'pmma', 'acrylic' }
             nref = [ 1.491 1.496 1.488 ];
@@ -217,15 +215,20 @@ else
         otherwise
             error( [ 'No values for glass absorption for: ', glass ] );
     end
-    if strcmp( glass, 'cornea' ) || ...
+    
+    if size( nref ) == 1
+        n_refr=nref;
+    elseif strcmp( glass, 'cornea' ) || ...
             strcmp( glass, 'aqueous' ) || ...
             strcmp( glass, 'lens' ) || ...
             strcmp( glass, 'vitreous' )
         [ abc, ~, Mu ] = polyfit( 1./lambda_eye.^2, nref, 2 );
+         n_refr = polyval( abc, 1./wavelength.^2, [], Mu );
     else
         [ abc, ~, Mu ] = polyfit( 1./lambda_ref.^2, nref, 2 );
+         n_refr = polyval( abc, 1./wavelength.^2, [], Mu );
     end
-    n_refr = polyval( abc, 1./wavelength.^2, [], Mu );
+   
 end
 
 end
