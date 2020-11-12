@@ -88,6 +88,12 @@
             h = self.draw@GeneralLens( color );
         end
         
+        
+        function  sag = get_sag(self)
+            rval=linspace(0,self.D(2)/2,11);
+            sag= aspheric( self.funca, rval );   
+        end
+        
         function rotate( self, rot_axis, rot_angle )
             self.rotate@Surface( rot_axis, rot_angle ); % rotate the surface members
             if abs( rot_angle ) > pi/2
