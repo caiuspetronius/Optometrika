@@ -30,7 +30,7 @@ bench.append( screen );
 % create some rays
 nrays = 500;
 % rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 58, 'hexagonal' );
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal','air' );
 
 tic;
 
@@ -70,7 +70,7 @@ scatter3( focal, 0, 0, 'y*' ); % draw the standard deviation focal point as a ye
 
 % get the screen image in high resolution for both types of focal points
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal','air' );
 bench.trace( rays_in );
 figure( 'Name', 'Image on the screen, convergence focal point', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

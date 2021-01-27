@@ -24,7 +24,7 @@ bench.append( screen );
 
 % create collimated rays with some slant
 nrays = 500;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal','air' );
 
 tic;
 fprintf( 'Tracing rays... ' );
@@ -35,7 +35,7 @@ bench.draw( rays_through );  % display everything, the other draw option is 'lin
 
 % get the screen image in high resolution
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal','air' );
 bench.trace( rays_in );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

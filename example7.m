@@ -65,7 +65,7 @@ bench.append( screen );
 tic;
 fprintf( 'Tracing rays... ' );
 nrays = 100;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal','air' );
 rays_through = bench.trace( rays_in );
 toc;
 

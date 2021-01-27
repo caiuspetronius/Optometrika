@@ -49,7 +49,7 @@ bench.append( screen );
 
 % create collimated rays
 nrays = 100;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 40, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 40, 'hexagonal','air' );
 
 fprintf( 'Tracing rays...\n' );
 rays_through = bench.trace( rays_in, 0 ); % the second parameter set to 0 enables ray tracing for rays missing some elmeents on the bench
@@ -61,7 +61,7 @@ fprintf( 'The focal point of the system at: %.3f\n', fp(1) );
 
 % get the screen image in high resolution
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 40, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 40, 'hexagonal','air' );
 bench.trace( rays_in, 0 );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

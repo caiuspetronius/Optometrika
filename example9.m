@@ -42,7 +42,7 @@ bench.append( screen );
 
 % create collimated rays
 nrays = 200;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], D(1) - 0.01, 'linear' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], D(1) - 0.01, 'linear','air' );
 y = rays_in.r( :, 2 );
 z = rays_in.r( :, 3 );
 rays_in.color( abs( z ) < 5 & y > LD/2, 2 ) = 0; % 

@@ -26,7 +26,7 @@ bench.append( screen );
 
 % create collimated rays
 nrays = 500;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal','air' );
 
 fprintf( 'Tracing rays...\n' );
 rays_through = bench.trace( rays_in );

@@ -810,7 +810,12 @@ classdef Rays
             % Check the refractive index is correct
             if ~(self.nrefr == refrindx( self.w, med1 )) & ...
                 ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ~isa( surf, 'Aperture' )
-                warning('OptoMetrika:refrIndexMismatch','Refractive Index of Ray and Optical element mismatch. Was changed to Value expected at element entry.');
+                
+				warning('OptoMetrika:refrIndexMismatch',...
+                    ['Refractive Index of Ray and Optical element mismatch. \n' ...
+                     'Was changed to Value expected at element entry.\n' ]);
+                self.nrefr = refrindx( self.w, med1 ); 
+                rays_out.nrefr = self.nrefr;
             end
             
             % determine refractive indices before and after the surface 
