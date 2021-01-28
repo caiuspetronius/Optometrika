@@ -474,10 +474,10 @@ classdef Rays
                         
                         
                         switch self.setget_solver_flag()
-                            case 'default'
+                            case {'default', 'precise'}
                               a_fun = @dist2; %avoid broadcasting in par loop
                               a_fval= 1e-8;
-                            case 'precise'
+                            case 'precise_abs'
                               a_fun = @dist_abs; %avoid broadcasting in par loop
                               a_fval= 1e-4;
                             otherwise
@@ -487,6 +487,14 @@ classdef Rays
                         
                         if exist( 'fminunc', 'file' ) % requires optimization toolbox
                             options = optimoptions( 'fminunc', 'Algorithm', 'quasi-newton', 'Display', 'off', 'Diagnostics', 'off');
+
+                            if strcmp('precise',self.setget_solver_flag()) || ...
+                                strcmp('precise_abs',self.setget_solver_flag()) 
+                                options.StepTolerance = 1e-15;
+                                options.OptimalityTolerance = 1e-15;
+                                options.FiniteDifferenceStepSize = 100*eps;
+                            end
+                            
                             parfor i = 1 : self.cnt % run parallel computing
                                 % for i = 1 : self.cnt % run normal computing
                                 if outs( i ) == 0 % don't process lost rays
