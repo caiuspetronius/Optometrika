@@ -1,0 +1,1 @@
+function d = dist2( l, r0, e, surf )  rend = r0 + l * e; % the ray's end  d = abs( rend( :, 1 ) - surf.funch( rend( :, 2 ), rend( :, 3 ), surf.funca, 0 ) );end

@@ -92,6 +92,23 @@ classdef Rays
     % Copyright: Yury Petrov, 2016
     %
     
+    
+    % Flag Function to change to higher precision numeric solution
+    % of generic lenses. 
+    methods (Static)   
+      function ret = setget_solver_flag(par)
+         persistent solver_flag;        
+         if nargin
+            solver_flag = par;
+         elseif(isempty(solver_flag))
+            solver_flag='default'; %default
+         end
+         ret = solver_flag;
+      end
+   end
+    
+   
+    
     properties
         r = []; % a matrix of ray starting positions
         n = []; % a matrix of ray directions
@@ -454,13 +471,27 @@ classdef Rays
                         % minimize a measure of distance between a ray point and the surface
                         rinter = ones( self.cnt, 3 ); % init intersection vectors
                         outs = self.I == 0;
+                        
+                        
+                        switch self.setget_solver_flag()
+                            case 'default'
+                              a_fun = @dist2; %avoid broadcasting in par loop
+                              a_fval= 1e-8;
+                            case 'precise'
+                              a_fun = @dist_abs; %avoid broadcasting in par loop
+                              a_fval= 1e-4;
+                            otherwise
+                             warning('OptoMetrika:solverFlag',...
+                                     'solverFlag must be ´default´ or ´precise´.' );   
+                        end
+                        
                         if exist( 'fminunc', 'file' ) % requires optimization toolbox
-                            options = optimoptions( 'fminunc', 'Algorithm', 'quasi-newton', 'Display', 'off', 'Diagnostics', 'off' );
+                            options = optimoptions( 'fminunc', 'Algorithm', 'quasi-newton', 'Display', 'off', 'Diagnostics', 'off');
                             parfor i = 1 : self.cnt % run parallel computing
-                                % for i = 1 : self.cnt % run parallel computing
+                                % for i = 1 : self.cnt % run normal computing
                                 if outs( i ) == 0 % don't process lost rays
-                                    [ d, fval ] = fminunc( @dist2, 20, options, r_in( i, : ), e( i, : ), surf );
-                                    if fval > 1e-8 % didn't intersect with the surface
+                                    [ d, fval ] = fminunc( a_fun, 20, options, r_in( i, : ), e( i, : ), surf );
+                                    if fval > a_fval % didn't intersect with the surface
                                         outs( i ) = 1;
                                         rinter( i, : ) = Inf;
                                     else                                       
@@ -473,8 +504,8 @@ classdef Rays
                             options = optimoptions( 'fminunc', 'MaxFunEvals', 2000, 'Display', 'off', 'Diagnostics', 'off' );
                             parfor i = 1 : self.cnt  % run parallel computing
                                 if outs( i ) == 0 % don't process lost rays
-                                    [ d, fval ] = fminsearch( @dist2, 0, options, r_in( i, : ), e( i, : ), surf );
-                                    if fval > 1e-8 % didn't intersect with the surface
+                                    [ d, fval ] = fminsearch( a_fun, 0, options, r_in( i, : ), e( i, : ), surf );
+                                    if fval > a_fval % didn't intersect with the surface
                                         outs( i ) = 1;
                                         rinter( i, : ) = Inf;
                                     else

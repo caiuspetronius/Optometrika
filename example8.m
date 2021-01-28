@@ -29,7 +29,7 @@ rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal','air'
 tic;
 fprintf( 'Tracing rays... ' );
 rays_through = bench.trace( rays_in );    % repeat to get the min spread rays
-
+toc;
 % draw bench elements and draw rays as arrows
 bench.draw( rays_through );  % display everything, the other draw option is 'lines'
 

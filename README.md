@@ -50,3 +50,7 @@ example16.m: demonstrates STL export of various lenses
 
 example17.m: demonstrates tracing of optical pathlength (opl) for three different lenses
 
+example18.m: demonstrates optical path length through wedged optical windows
+
+example19.m: tests precision of the numerical solver in default and precision mode
+
