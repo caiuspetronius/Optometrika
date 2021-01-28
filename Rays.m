@@ -825,6 +825,13 @@ classdef Rays
             % find intersections and set outcoming rays starting points
             [ rays_out, nrms ] = self.intersection( surf );
             
+          
+           if (dot(nrms,self.n,2))<0
+               warning('OptoMetrika:surfNormals',...
+                    'Surface normals are facing opposite direction of ray. \n');
+               nrms=-nrms;
+           end
+         
            %gpl1= dot( rays_out.r-self.r, self.n, 2 );
           rays_out.gpl =  dot( rays_out.r-self.r, self.n, 2 );
           rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
