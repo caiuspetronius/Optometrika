@@ -30,13 +30,15 @@ dens = [];
 hard = [];
 
 if isempty( glass_names_sellmeier )
-    qwe = '';
-    fp = fopen( 'Sellmeier.glass.refr', 'r' );
-    while ~feof( fp )
-        qwe = str2mat( qwe, fgetl( fp ) );
-    end
-    glass_names_sellmeier = qwe( 2:end, 1:7 );
-    refr_consts_sellmeier = str2num( qwe( 2:end, 8:end ) );
+    %qwe = '';
+    %fp = fopen( 'Sellmeier.glass.refr', 'r' );
+    %while ~feof( fp )
+    %    qwe = str2mat( qwe, fgetl( fp ) );
+    %end
+    sell_table=readtable('Sellmeier.glass.csv');
+ 
+    glass_names_sellmeier = table2cell(sell_table(:,1));
+    refr_consts_sellmeier =  table2array(sell_table(:,2:end));
 end
 
 lambda_ref = [ 5876 4861 6563 ] * 1e-10;
@@ -46,7 +48,7 @@ if isempty( wavelength )
     wavelength = lambda_ref( 1 ); % green wavelength by default
 end
 
-ind = strmatch( glass, glass_names_sellmeier );
+ind = find(strcmp( glass, glass_names_sellmeier ));
 if ~isempty( ind )
     lambda = wavelength * 1e6; % change units to micrometer
     A = refr_consts_sellmeier( ind, 1:3 );

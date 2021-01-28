@@ -16,9 +16,9 @@ aper = Aperture( [ 5 0 0 ], [ 25 80 ] ); % circular aperture
 bench.append( aper );
 
 % front lens surface
-lens1 = Lens( [ 40 0 0 ], 58, 40, -1, { 'air' 'bk7' } ); % parabolic surface
+lens1 = Lens( [ 40 0 0 ], 58, 40, -1, { 'air' 'N-BAK 4' } ); % parabolic surface
 % back lens surface
-lens2 = Lens( [ 60 0 0 ], 58, -70, -3, { 'bk7' 'air' } ); % concave hyperbolic surface
+lens2 = Lens( [ 60 0 0 ], 58, -70, -3, { 'N-BAK 4' 'air' } ); % concave hyperbolic surface
 bench.append( { lens1, lens2 } );
 
 % screen
