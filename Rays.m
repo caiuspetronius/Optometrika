@@ -832,37 +832,20 @@ classdef Rays
             
             % find intersections and set outcoming rays starting points
             [ rays_out, nrms ] = self.intersection( surf );
-            
-          
-           if (dot(nrms,self.n,2))<0
-               warning('OptoMetrika:surfNormals',...
-                    'Surface normals are facing opposite direction of ray. \n');
-               nrms=-nrms;
-           end
-         
+                    
+        
            %gpl1= dot( rays_out.r-self.r, self.n, 2 );
           rays_out.gpl =  dot( rays_out.r-self.r, self.n, 2 );
           rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
             
             
             miss = rays_out.I < 0; % indices of the rays
-            
+
             rays_out.gpl(miss)=NaN;
-%             opposite = dot( self.n, nrms, 2 ) < 0;
-%             rays_out.I( opposite) = 0; % 
+
             med1 = surf.glass{1};
             med2 = surf.glass{2};
             
-            % Check the refractive index is correct
-            if ~(self.nrefr == refrindx( self.w, med1 )) & ...
-                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ~isa( surf, 'Aperture' )
-                
-				warning('OptoMetrika:refrIndexMismatch',...
-                    ['Refractive Index of Ray and Optical element mismatch. \n' ...
-                     'Was changed to Value expected at element entry.\n' ]);
-                self.nrefr = refrindx( self.w, med1 ); 
-                rays_out.nrefr = self.nrefr;
-            end
             
             % determine refractive indices before and after the surface 
             cs1 = dot( nrms, self.n, 2 ); % cosine between the ray direction and the surface direction
@@ -871,15 +854,30 @@ classdef Rays
             old_refr(  opp_rays ) = refrindx( self.w(  opp_rays ), med2 ); % refractive index before the surface
             if strcmp( med2, 'mirror' ) || strcmp( med2, 'soot' )
                 new_refr = refrindx( self.w, med1 ); % refractive index after the surface
+                %old_refr = new_refr;
             elseif  strcmp( med1, 'mirror' )
                 new_refr = refrindx( self.w, med2 ); % refractive index after the surface
+                old_refr = new_refr;
             else
                 new_refr( ~opp_rays ) = refrindx( self.w( ~opp_rays ), med2 ); % refractive index after the surface
                 new_refr(  opp_rays ) = refrindx( self.w(  opp_rays ), med1 ); % refractive index after the surface
             end
-            old_refr = old_refr';
+            
             if size( new_refr, 1 ) < size( new_refr, 2 )
                 new_refr = new_refr';
+            end
+            if size( old_refr, 1 ) < size( old_refr, 2 )
+                old_refr = old_refr';
+            end
+            
+              % Check the refractive index is correct
+            if ~(self.nrefr == old_refr ) & ...
+                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ~isa( surf, 'Aperture' )   
+				warning('OptoMetrika:refrIndexMismatch',...
+                    ['Refractive Index of Ray and Optical element mismatch. \n' ...
+                     'Was changed to Value expected at element entry.\n' ]);
+                self.nrefr = old_refr; 
+                rays_out.nrefr = new_refr;
             end
 
             % calculate refraction
