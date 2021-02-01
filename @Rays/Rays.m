@@ -1052,6 +1052,22 @@ classdef Rays
             r2 = sum( ( t - repmat( proj, 1, 3 ) .* self.n ).^2 );
         end
         
+         function [ ndev, ndev_max ] = stat_div( self )
+            % calculate rays divergence, avg and max
+            
+            ind = (self.I ~= 0);
+            sn = self.n( ind, : );
+            si = self.I( ind, : );
+            repI = repmat( si , 1, 3 );
+            nav = sum( sn .* repI, 1 ); % average bundle direction
+            nav = nav / sqrt( sum( nav.^2, 2 ) ); % normalize the average direction vector
+            nangle= acos(dot(self.n,repmat( nav, self.cnt,1),2 ));
+            
+            ndev= mean(abs(nangle(ind)));
+            ndev_max= max(abs(nangle(ind)));
+        end
+        
+        
         function [ f, ff ] = focal_point( self, flag )
             if nargin < 2
                 flag = 0;
