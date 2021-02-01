@@ -1,4 +1,4 @@
-function example4()
+function img=example4()
 %
 % test a ring lens with the cosine surface profile defined in coslens.m
 %
@@ -56,4 +56,6 @@ figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( kron( screen.image, ones( 3 ) ), [] );
 
 toc;
+
+img=screen.image;
 end
