@@ -852,8 +852,8 @@ classdef Rays
             opp_rays = cs1 < 0; %self.nrefr == refrindx( self.w, med2 ); %cs1 < 0; % rays hitting the surface from the opposite direction          
             old_refr( ~opp_rays ) = refrindx( self.w( ~opp_rays ), med1 ); % refractive index before the surface
             old_refr(  opp_rays ) = refrindx( self.w(  opp_rays ), med2 ); % refractive index before the surface
-            if strcmp( med2, 'mirror' ) || strcmp( med2, 'soot' )
-                new_refr = refrindx( self.w, med1 ); % refractive index after the surface
+            if strcmp( med2, 'mirror' )
+                new_refr = self.nrefr; % refractive index after the surface
                 %old_refr = new_refr;
             elseif  strcmp( med1, 'mirror' )
                 new_refr = refrindx( self.w, med2 ); % refractive index after the surface
