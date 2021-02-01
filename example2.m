@@ -1,10 +1,13 @@
-function example2()
+function result=example2()
 %
 % demonstrates the Optometrika's optical model of the human eye
 %
 % Copyright: Yury Petrov, 2016
 %
 
+
+%Add src to PATH
+startup;
 % demonstrate resolution dependence on the pupil diameter
 tic;
 disp( 'Calculating...' );
@@ -109,6 +112,9 @@ rays_through = bench.trace( rays_in );
 bench.draw( rays_through, 'lines' );
 
 toc;
+
+
+result = mdv;
 
 end
 

@@ -5,6 +5,9 @@ function example7()
 % Copyright: Yury Petrov, 2017
 %
 
+%Add src to PATH
+startup;
+
 % create a container for optical elements (Bench class)
 bench = Bench;
 

@@ -1,10 +1,13 @@
-function example2b()
+function result = example2b()
 %
 % demonstrates the Optometrika's optical model of the human eye
 % using recursive ray tracing function (about 10x slower)
 %
 % Copyright: Yury Petrov, 2016
 %
+
+%Add src to PATH
+startup;
 
 % demonstrate resolution dependence on the pupil diameter
 tic;
@@ -110,6 +113,8 @@ rays_through = bench.trace_recursive( rays_in );
 bench.draw( rays_through, 'lines' );
 
 toc;
+
+result = mdv;
 
 end
 

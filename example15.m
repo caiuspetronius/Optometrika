@@ -5,6 +5,9 @@ function example15()
 % Copyright: Yury Petrov, 2017
 %
 
+%Add src to PATH
+startup;
+
 R = 1;  % spherical lens radius
 nLenses = 19;
 D = 10 * R; % substrate plate diameter

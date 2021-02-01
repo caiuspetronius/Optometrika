@@ -1,10 +1,13 @@
-function meas=example18()
+function example18()
 % Analyze complete geometrical OPL error and offset error 
 % for a beam that passes through two non-wedged windows
 % that are tilted +45° and -45 degree.
 % A. Schultze 2020-10-05
 
-close all;
+
+%Add src to PATH
+startup;
+
 % create a container for optical elements (Bench class)
 bench = Bench;
 ref_bench = Bench;

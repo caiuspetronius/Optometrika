@@ -5,6 +5,9 @@ function example10()
 % Copyright: Yury Petrov, 2016
 %
 
+%Add src to PATH
+startup;
+
 D = 40; % cylinder diameter
 h = 20; % cylinder height
 

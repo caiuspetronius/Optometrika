@@ -3,6 +3,8 @@ function example17()
 % Measure the wavefront mismatch by tracking OPL of three different lens types.
 % A. Schultze 2020-09-24
 
+%Add src to PATH
+startup;
 
 for i=1:3 %each lens type
 

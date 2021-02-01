@@ -5,6 +5,9 @@ function example9()
 % Copyright: Yury Petrov, 2016
 %
 
+%Add src to PATH
+startup;
+
 fov = 160; % FOV, degrees
 fov = fov / 180 * pi;
 D = [ 62 50 33 ]; % mirror diameters

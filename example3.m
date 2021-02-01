@@ -5,6 +5,10 @@ function [ dist, ld, dv ] = example3( pupil_diameter )
 % Copyright: Yury Petrov, 2016
 %
 
+
+%Add src to PATH
+startup;
+
 if nargin < 1
     pupil_diameter = 3; % mm, normal illumination
 end

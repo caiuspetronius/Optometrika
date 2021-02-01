@@ -4,13 +4,21 @@ function meas=example19()
 % (quadratic) mode and higher precision mode.
 % Limitation of both is eps of the solver.
 
+
+% REMARK: For reasonable results you should change the initial condition
+% of the numeric solver to a random value
+% Rays.m:501 -#  [ d, fval ] = fminunc( a_fun, 20, ...
+% to         +#  [ d, fval ] = fminunc( a_fun, rand, ...
+
 % A. Schultze 2021-01-28
 
+%Add src to PATH
+startup;
 
 bench = Bench;
 
 % front lens surface FLAT
-lens1 = AsphericLens( [ 0 0 0 ], 31, 1e16, 0, [ 0 0 0 ], { 'air' 'pmma' } );
+lens1 = AsphericLens( [ 0 0 0 ], 31, 1e16, 0, [ 0 0 0 ], { 'air' 'N-BAK 4' } );
 bench.append( lens1 );
 tic;
 nrays = 500;
