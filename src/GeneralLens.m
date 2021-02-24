@@ -30,7 +30,10 @@ classdef GeneralLens < Surface
         funcs = '' % lens surface function name string
         funch = [] % the corresponding function handle
         funca = [] % argument list for the function
-     end
+        type  = 'cart'; % 'cart','pol'
+    end
+     
+ 
     
     methods
         function self = GeneralLens( ar, aD, afunc, aglass, varargin )

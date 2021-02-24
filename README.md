@@ -14,6 +14,7 @@ The library is compact and fast. It was written using Matlab classes and is full
 
 Thank you for downloading Optometrika, enjoy it!
 
+
 ## List of examples:
 
 example1.m: tests the basic functionality of the Optometrika library
@@ -54,3 +55,11 @@ example18.m: demonstrates optical path length through wedged optical windows
 
 example19.m: tests precision of the numerical solver in default and precision mode
 
+example20.m: demonstrates arbitrary topology surface
+
+## To acknowledge use of this software, please cite the following publication:
+
+A. Schultze and Y. Petrov. OptoMetrika -Open source ray tracer for MATLAB. 2021.
+[DOI: 10.13140/RG.2.2.10027.98081/1](https://dx.doi.org/10.13140/RG.2.2.10027.98081/1)
+
+We also welcome opportunities to collaborate as co-author(s) on project applications that make use of OptoMetrika, and we aim to continue supporting and developing LoadDef based on community input. If you have any questions about the software or would like to discuss a particular project idea further, please get in touch! Thanks!

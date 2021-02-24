@@ -7,10 +7,10 @@ classdef Rays
     % r = Rays( n, geometry, r, dir, D, pattern, glass, wavelength, color, diopter ) - object constructor
     % INPUT:
     %   n - number of rays in the bundle
-    %   geometry - For geometry 'collimated', r defines rays origins while dir - 
-    % their direction. For geometry 'source', r defines position 
+    %   geometry - For geometry 'collimated', r defines rays origins while dir -
+    % their direction. For geometry 'source', r defines position
     % of the point source, and dir - direction along which rays propagate. For geometry
-    % 'vergent' r defines rays orignis, dir - their average direction, while diopter 
+    % 'vergent' r defines rays orignis, dir - their average direction, while diopter
     % defines the convergence/divergence of the rays in diopters.
     %   r - 1x3 bundle source position vector
     %   dir - 1x3 bundle direction vector
@@ -52,13 +52,13 @@ classdef Rays
     %   r1 - the appended ray bundle
     % OUTPUT:
     %   r - the resulting ray bundle
-    % 
+    %
     % sr = r.subset( inices ) - subset of rays in bundle r
     % INPUT:
     %   indices - subset's indices in the bundle r
     % OUTPUT:
     %   sr - the resulting new ray bundle
-    % 
+    %
     % r = r.truncate() - truncate all rays with zero intensity from the bundle r.
     %
     % [ av, dv, nrays ] = r.stat() - return statistics on the bundle r
@@ -87,27 +87,27 @@ classdef Rays
     % point f is defined as the mean convergence distance of the bundle
     % rays. ff gives the residual bundle crossection (intensity weighted std).
     % OUTPUT:
-    %    f - 1x3 vector for the focal point 
+    %    f - 1x3 vector for the focal point
     %
     % Copyright: Yury Petrov, 2016
     %
     
     
     % Flag Function to change to higher precision numeric solution
-    % of generic lenses. 
-    methods (Static)   
-      function ret = setget_solver_flag(par)
-         persistent solver_flag;        
-         if nargin
-            solver_flag = par;
-         elseif(isempty(solver_flag))
-            solver_flag='default'; %default
-         end
-         ret = solver_flag;
-      end
-   end
+    % of generic lenses.
+    methods (Static)
+        function ret = setget_solver_flag(par)
+            persistent solver_flag;
+            if nargin
+                solver_flag = par;
+            elseif(isempty(solver_flag))
+                solver_flag='default'; %default
+            end
+            ret = solver_flag;
+        end
+    end
     
-   
+    
     
     properties
         r = []; % a matrix of ray starting positions
@@ -122,13 +122,13 @@ classdef Rays
         gpl = [];  % a vector of last traced ray geometrical path length
     end
     
-    methods            
+    methods
         function self = Rays( cnt, geometry, pos, dir, diameter, rflag, glass, wavelength, acolor, adiopter ) % constructor of ray bundles
-            % Constructs a ray bundle comprising 'cnt' rays. For geometry 
-            % 'collimated', 'pos' defines rays origins, while 'dir' - 
-            % their direction. For geometry 'source', 'pos' defines position 
-            % of the point source, 'dir' - direction along which rays form a 
-            % linear, hexagonal, square, or random pattern (specified by 'rflag') of 
+            % Constructs a ray bundle comprising 'cnt' rays. For geometry
+            % 'collimated', 'pos' defines rays origins, while 'dir' -
+            % their direction. For geometry 'source', 'pos' defines position
+            % of the point source, 'dir' - direction along which rays form a
+            % linear, hexagonal, square, or random pattern (specified by 'rflag') of
             % the size specified by 'diameter' at distance 1. For geometry
             % 'vergent' 'pos' defines rays orignis, 'dir' - their average
             % direction, while 'adiopter' defines the convergence/divergence
@@ -138,9 +138,9 @@ classdef Rays
                 return;
             end
             if nargin < 10 || isempty( adiopter )
-               diopter = 0;
+                diopter = 0;
             else
-               diopter = adiopter;
+                diopter = adiopter;
             end
             if nargin < 9 || isempty( acolor )
                 self.color = [ 0 1 0 ];
@@ -170,13 +170,13 @@ classdef Rays
             if nargin < 2 || isempty( geometry )
                 geometry = 'collimated';
             end
-                    
+            
             % normalize direction and rotate positions to the plane
             % orthogonal to their direction
             dir = dir ./ norm( dir );
             ex = [ 1 0 0 ];
             ax = cross( ex, dir );
-
+            
             if strcmp( rflag, 'linear' ) || strcmp( rflag, 'linearY' ) % extend along y-axis
                 p( :, 1 ) = linspace( -diameter/2, diameter/2, cnt ); % all rays starting from the center
                 p( :, 2 ) = 0;
@@ -212,9 +212,9 @@ classdef Rays
                 if cn > 0
                     p = p * diameter / 2 / cn * 2 / sqrt( 3 ); % circubscribe the hexagon by an inward circle
                 end
-%                 if cn > 2 % cut away corners of the hexagon
-%                     p( p( :, 1 ).^2 + p( :, 2 ).^2 > ( diameter / ( 4 * cn ) )^2 * 4 / 3 + diameter^2 / 4, : ) = [];
-%                 end
+                %                 if cn > 2 % cut away corners of the hexagon
+                %                     p( p( :, 1 ).^2 + p( :, 2 ).^2 > ( diameter / ( 4 * cn ) )^2 * 4 / 3 + diameter^2 / 4, : ) = [];
+                %                 end
             elseif strcmp( rflag, 'square' )
                 % find the closest square number to cnt
                 rad = diameter / 2;
@@ -273,7 +273,7 @@ classdef Rays
                 [ x, y, z ] = sphere( n ); % create a spherical distribution of points along latitude and longtitude lines
                 % rotate so that the first point in each const. z row faces the positive x direction and make the rows go along the y-change direction
                 x = circshift( x, n/2 + 1, 2 )';
-                y = circshift( y, n/2 + 1, 2 )'; 
+                y = circshift( y, n/2 + 1, 2 )';
                 z = circshift( z, n/2 + 1, 2 )';
                 self.n = [ x(:) y(:) z(:) ];
                 self.cnt = size( self.n, 1 );
@@ -286,7 +286,7 @@ classdef Rays
             end
             
             if ~strcmp( rflag, 'sphere' )
-                self.cnt = size( p, 1 );            
+                self.cnt = size( p, 1 );
                 p = [ zeros( self.cnt, 1 ) p ]; % add x-positions
                 pos = repmat( pos, self.cnt, 1 );
                 if norm( ax ) ~= 0
@@ -318,7 +318,7 @@ classdef Rays
                 % normalize directions
                 self.n = self.n ./ repmat( sqrt( sum( self.n.^2, 2 ) ), 1, 3 );
             end
-                
+            
             if ~strcmp( rflag, 'pentile' )
                 self.w = repmat( self.w, self.cnt, 1 );
                 self.color = repmat( self.color, self.cnt, 1 );
@@ -335,7 +335,7 @@ classdef Rays
             self.gpl = zeros( self.cnt, 1 );
         end
         
-            
+        
         function draw( self, scale )
             if nargin == 0 || isempty( scale )
                 scale = 1;
@@ -346,11 +346,11 @@ classdef Rays
             for i = 1 : size( unique_colors, 1 )
                 cvis = vis & ( ic == i );
                 quiver3( self.r( cvis, 1 ), self.r( cvis, 2 ), self.r( cvis, 3 ), ...
-                         nrms( cvis, 1 ),   nrms( cvis, 2 ),   nrms( cvis, 3 ), ...
-                         0, 'Color', unique_colors( i, : ), 'ShowArrowHead', 'off' );
+                    nrms( cvis, 1 ),   nrms( cvis, 2 ),   nrms( cvis, 3 ), ...
+                    0, 'Color', unique_colors( i, : ), 'ShowArrowHead', 'off' );
             end
         end
-         
+        
         
         function [ rays_out, nrms ] = intersection( self, surf )
             % instantiate Rays object
@@ -361,14 +361,11 @@ classdef Rays
                 case { 'Aperture', 'Plane', 'Screen','ScreenGeneric' } % intersection with a plane
                     % distance to the plane along the ray
                     d = dot( repmat( surf.n, self.cnt, 1 ), repmat( surf.r, self.cnt, 1 ) - self.r, 2 ) ./ ...
-                        dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 ); 
-                     
+                        dot( self.n, repmat( surf.n, self.cnt, 1 ), 2 );
+                    
                     % calculate intersection vectors and normals
                     rinter = self.r + repmat( d, 1, 3 ) .* self.n;
                     nrms = repmat( surf.n, self.cnt, 1 );
-                    
-
-                    
                     
                     % bring surface to the default position
                     rtr = rinter - repmat( surf.r, self.cnt, 1 );
@@ -382,8 +379,8 @@ classdef Rays
                         wrong_dir = dot( nrms * sign( surf.R(1) ), self.n, 2 ) < 0;
                         self.I( wrong_dir ) = 0; % zero for the rays that point away from the screen for the image formation
                         rays_out.r( wrong_dir, : ) = Inf * rays_out.r( wrong_dir, : );
-                        rays_out.opl( wrong_dir, : ) = NaN;                     
-                        rays_out.gpl( wrong_dir, : ) = NaN; 
+                        rays_out.opl( wrong_dir, : ) = NaN;
+                        rays_out.gpl( wrong_dir, : ) = NaN;
                         
                         surf.image = hist2( rtr( :, 2 ), rtr( :, 3 ), self.I, ...
                             linspace( -surf.w/2, surf.w/2, surf.wbins ), ...
@@ -396,13 +393,13 @@ classdef Rays
                         wrong_dir = dot( nrms * sign( surf.R(1) ), self.n, 2 ) < 0;
                         self.I( wrong_dir ) = 0; % zero for the rays that point away from the screen for the image formation
                         rays_out.r( wrong_dir, : ) = Inf * rays_out.r( wrong_dir, : );
-                        rays_out.opl( wrong_dir, : ) = NaN;                     
-                        rays_out.gpl( wrong_dir, : ) = NaN; 
+                        rays_out.opl( wrong_dir, : ) = NaN;
+                        rays_out.gpl( wrong_dir, : ) = NaN;
                         
                         
                         switch surf.type
                             case 'wf'
-                                z= 1/1000*(rays_out.opl-min(rays_out.opl))./self.w; 
+                                z= 1/1000*(rays_out.opl-min(rays_out.opl))./self.w;
                             case 'opl'
                                 z= rays_out.opl;
                             case 'tilt'
@@ -431,26 +428,26 @@ classdef Rays
                             out = ( r2 + 1e-12 < ( surf.D(1) / 2 )^2 ) | ( r2 - 1e-12 > ( surf.D(2) / 2 )^2 );
                         elseif length( surf.D ) == 4
                             out =  rinter( :, 2 ) > -surf.D(1)/2 & rinter( :, 2 ) < surf.D(1)/2 & ...
-                                   rinter( :, 3 ) > -surf.D(2)/2 & rinter( :, 3 ) < surf.D(2)/2 | ...
-                                   rinter( :, 2 ) < -surf.D(3)/2 | rinter( :, 2 ) > surf.D(3)/2 | ...
-                                   rinter( :, 3 ) < -surf.D(4)/2 | rinter( :, 3 ) > surf.D(4)/2;
+                                rinter( :, 3 ) > -surf.D(2)/2 & rinter( :, 3 ) < surf.D(2)/2 | ...
+                                rinter( :, 2 ) < -surf.D(3)/2 | rinter( :, 2 ) > surf.D(3)/2 | ...
+                                rinter( :, 3 ) < -surf.D(4)/2 | rinter( :, 3 ) > surf.D(4)/2;
                         end
                     end
                     rays_out.I( out ) = -1 * rays_out.I( out ); % mark for processing in the interaction function
                     
                     if isa( surf, 'Screen' )  % do not draw rays that missed the screen
                         rays_out.I( out ) = 0;
-                        %rays_out.I( wrong_dir ) = 0; 
+                        %rays_out.I( wrong_dir ) = 0;
                         rays_out.r( out, : ) = Inf;
                     elseif isa( surf, 'Aperture' )
                         rays_out.I( ~out ) = 0; % block the rays
                     end
                     
-                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Lens' 'Sphere' 'Retina' } % intersection with a conical surface of rotation
+                case { 'SurfaceGeneric' 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Lens' 'Sphere' 'Retina' } % intersection with a conical surface of rotation
                     % intersection between rays and the surface, also returns surface normals at the intersections
                     
                     % transform rays into the lens surface RF
-                   
+                    
                     
                     r_in = self.r - repmat( surf.r, self.cnt, 1 ); % shift to RF with surface origin at [ 0 0 ]
                     
@@ -467,7 +464,33 @@ classdef Rays
                         e( :, 3 ) = e( :, 3 ) * sc;
                     end
                     
-                    if isa( surf , 'GeneralLens' ) || isa( surf, 'AsphericLens' )
+                    
+                    if isa( surf , 'SurfaceGeneric' )
+                        % minimize a measure of distance between a ray point and the surface
+                        rinter = ones( self.cnt, 3 ); % init intersection vectors
+                        outs = self.I == 0;
+                        options = optimoptions( 'fminunc', 'Algorithm', 'quasi-newton', 'Display', 'off', 'Diagnostics', 'off');
+                        a_fval= 1e-4;
+                        
+                        
+                        for i = 1 : self.cnt % run parallel computing
+                            % for i = 1 : self.cnt % run normal computing
+                            if outs( i ) == 0 % don't process lost rays
+                                [ d, fval ] = fminunc( @dist2_generic, 20, options, r_in( i, : ), e( i, : ), surf );
+                                if fval > a_fval % didn't intersect with the surface
+                                    outs( i ) = 1;
+                                    rinter( i, : ) = Inf;
+                                else
+                                    rinter( i, : ) = r_in( i, : ) + e( i, : ) * d;
+                                end
+                            end
+                        end
+                        rays_out.I( outs ) = 0;
+                        
+                        
+                        [~,en] = surf.eval( rinter( :, 2 ), rinter( :, 3 ));
+                        %end is a generic surface
+                    elseif isa( surf , 'GeneralLens' ) || isa( surf, 'AsphericLens' )
                         % minimize a measure of distance between a ray point and the surface
                         rinter = ones( self.cnt, 3 ); % init intersection vectors
                         outs = self.I == 0;
@@ -475,21 +498,21 @@ classdef Rays
                         
                         switch self.setget_solver_flag()
                             case {'default', 'precise'}
-                              a_fun = @dist2; %avoid broadcasting in par loop
-                              a_fval= 1e-8;
+                                a_fun = @dist2; %avoid broadcasting in par loop
+                                a_fval= 1e-8;
                             case 'precise_abs'
-                              a_fun = @dist_abs; %avoid broadcasting in par loop
-                              a_fval= 1e-4;
+                                a_fun = @dist_abs; %avoid broadcasting in par loop
+                                a_fval= 1e-4;
                             otherwise
-                             warning('OptoMetrika:solverFlag',...
-                                     'solverFlag must be ´default´ or ´precise´.' );   
+                                warning('OptoMetrika:solverFlag',...
+                                    'solverFlag must be ?default? or ?precise?.' );
                         end
                         
                         if exist( 'fminunc', 'file' ) % requires optimization toolbox
                             options = optimoptions( 'fminunc', 'Algorithm', 'quasi-newton', 'Display', 'off', 'Diagnostics', 'off');
-
+                            
                             if strcmp('precise',self.setget_solver_flag()) || ...
-                                strcmp('precise_abs',self.setget_solver_flag()) 
+                                    strcmp('precise_abs',self.setget_solver_flag())
                                 options.StepTolerance = 1e-15;
                                 options.OptimalityTolerance = 1e-15;
                                 options.FiniteDifferenceStepSize = 100*eps;
@@ -502,7 +525,7 @@ classdef Rays
                                     if fval > a_fval % didn't intersect with the surface
                                         outs( i ) = 1;
                                         rinter( i, : ) = Inf;
-                                    else                                       
+                                    else
                                         rinter( i, : ) = r_in( i, : ) + e( i, : ) * d;
                                     end
                                 end
@@ -551,7 +574,7 @@ classdef Rays
                                 ring.R = surf.R( i, 1 );
                                 dims = size(r_in);
                                 rin = repmat([ surf.vx( i ) + surf.sag( i ), 0, 0 ],dims(1),1) + ...
-                                conic_intersection( r_in - repmat([ surf.vx( i ) + surf.sag( i ), 0, 0 ],dims(1),1), e, ring );
+                                    conic_intersection( r_in - repmat([ surf.vx( i ) + surf.sag( i ), 0, 0 ],dims(1),1), e, ring );
                                 r2 = rin( :, 2 ).^2 + rin( :, 3 ).^2;
                                 in = r2 >= radin.^2 & r2 < surf.rad( i, 2 ).^2;
                                 if sum( in ) == 0
@@ -588,7 +611,7 @@ classdef Rays
                         end
                         rinter = mem( :, 1:3 );
                         rings_hit = unique( rings );
- 
+                        
                         % find normals
                         if isempty( surf.vx ) || surf.R( i, 1 ) == 0 || isinf( surf.k( i ) ) % cone surface
                             c = cos( surf.the( rings, 1 ) );
@@ -696,9 +719,9 @@ classdef Rays
                             rinter = mem;
                         end
                         
-%                         figure, plot3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), '*' ), hold on, ...
-%                         quiver3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), en( :, 1 ), en( :, 2 ), en( :, 3 ), 5 ), axis equal vis3d;
-                      
+                        %                         figure, plot3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), '*' ), hold on, ...
+                        %                         quiver3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), en( :, 1 ), en( :, 2 ), en( :, 3 ), 5 ), axis equal vis3d;
+                        
                     elseif isa( surf, 'ConeLens' ) % cone lens
                         % find intersections
                         rinter = Inf * ones( self.cnt, 3 ); % init intersection vectors
@@ -710,7 +733,7 @@ classdef Rays
                         s = sin( surf.the );
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = sign( surf.the ) * [ s * ones( size( th ) ), -c * cos( th ), -c * sin( th ) ]; % make normal sign positive wrt ray
-                                                
+                        
                     elseif isa( surf, 'CylinderLens' )
                         % find intersection
                         rinter = Inf * ones( self.cnt, 3 ); % init intersection vectors
@@ -720,17 +743,17 @@ classdef Rays
                         % find normals
                         th = atan2( rinter( :, 3 ), rinter( :, 2 ) ); % rotation angle to bring r into XZ plane
                         en = [ zeros( size( th ) ), cos( th ), sin( th ) ];
-       
-                    elseif isa( surf, 'Sphere' )   
-                        [rinter] = sphere_intersection( r_in, e, surf );  
                         
-
-                        en =  rinter ;  
+                    elseif isa( surf, 'Sphere' )
+                        [rinter] = sphere_intersection( r_in, e, surf );
+                        
+                        
+                        en =  rinter ;
                         % normal vector coincident with
-                         % intersection position
+                        % intersection position
                         
                     else % conic lens
-                        [rinter] = conic_intersection( r_in, e, surf );                        
+                        [rinter] = conic_intersection( r_in, e, surf );
                         
                         % find normals
                         r2yz = ( rinter( :, 2 ).^2 + rinter( :, 3 ).^2 ) / surf.R(1)^2; % distance to the lens center along the lens plane in units of lens R
@@ -771,7 +794,7 @@ classdef Rays
                             end
                         end %is a retina
                     end %is general lens, aspheric lens,..
-                                        
+                    
                     % handle rays that miss the element
                     out = [];
                     if isa( surf, 'ConeLens' ) || isa( surf, 'CylinderLens' )
@@ -802,7 +825,11 @@ classdef Rays
                         sc = surf.R( 1 ) / surf.R( 2 );
                         rinter( :, 3 ) = rinter( :, 3 ) / sc;
                         en( :, 3 ) = en( :, 3 ) * sc; % normals transform as one-forms rather than vectors. Hence, divide by the scaling factor
-                    end                  
+                    end
+                    
+                    %in the local reference frame, check if adjust to surf
+                    %profile
+                    
                     if surf.rotang ~= 0 % needs rotation
                         rays_out.r = rodrigues_rot( rinter, surf.rotax, surf.rotang );
                         nrms = rodrigues_rot( en, surf.rotax, surf.rotang );
@@ -811,12 +838,12 @@ classdef Rays
                         nrms = en;
                     end
                     nrms = nrms ./ repmat( sqrt( sum( nrms.^2, 2 ) ), 1, 3 );
-%                     if ~isreal( en )
-%                         % rays_out.I( imag( sum( en, 2 ) ) ~= 0 ) = 0;
-%                         figure, plot3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), '*' ), hold on,
-%                         quiver3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), en( :, 1 ), en( :, 2 ), en( :, 3 ), 5 ),
-%                         axis equal vis3d; xlabel( 'x' ), ylabel( 'y' ), zlabel( 'z' );
-%                     end
+                    %                     if ~isreal( en )
+                    %                         % rays_out.I( imag( sum( en, 2 ) ) ~= 0 ) = 0;
+                    %                         figure, plot3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), '*' ), hold on,
+                    %                         quiver3( rinter( :, 1 ), rinter( :, 2 ), rinter( :, 3 ), en( :, 1 ), en( :, 2 ), en( :, 3 ), 5 ),
+                    %                         axis equal vis3d; xlabel( 'x' ), ylabel( 'y' ), zlabel( 'z' );
+                    %                     end
                     rays_out.r = rays_out.r + repmat( surf.r, self.cnt, 1 );
                     
                 otherwise
@@ -824,7 +851,7 @@ classdef Rays
             end
             
         end
-         
+        
         
         function rays_out = interaction( self, surf, out_fl )
             % INTERACTION calculates rays properties after interacting with
@@ -832,24 +859,24 @@ classdef Rays
             
             % find intersections and set outcoming rays starting points
             [ rays_out, nrms ] = self.intersection( surf );
-                    
-        
-           %gpl1= dot( rays_out.r-self.r, self.n, 2 );
-          rays_out.gpl =  dot( rays_out.r-self.r, self.n, 2 );
-          rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
+            
+            
+            %gpl1= dot( rays_out.r-self.r, self.n, 2 );
+            rays_out.gpl =  dot( rays_out.r-self.r, self.n, 2 );
+            rays_out.opl =  self.opl+rays_out.gpl.*self.nrefr;
             
             
             miss = rays_out.I < 0; % indices of the rays
-
+            
             rays_out.gpl(miss)=NaN;
-
+            
             med1 = surf.glass{1};
             med2 = surf.glass{2};
             
             
-            % determine refractive indices before and after the surface 
+            % determine refractive indices before and after the surface
             cs1 = dot( nrms, self.n, 2 ); % cosine between the ray direction and the surface direction
-            opp_rays = cs1 < 0; %self.nrefr == refrindx( self.w, med2 ); %cs1 < 0; % rays hitting the surface from the opposite direction          
+            opp_rays = cs1 < 0; %self.nrefr == refrindx( self.w, med2 ); %cs1 < 0; % rays hitting the surface from the opposite direction
             old_refr( ~opp_rays ) = refrindx( self.w( ~opp_rays ), med1 ); % refractive index before the surface
             old_refr(  opp_rays ) = refrindx( self.w(  opp_rays ), med2 ); % refractive index before the surface
             if strcmp( med2, 'mirror' )
@@ -870,35 +897,35 @@ classdef Rays
                 old_refr = old_refr';
             end
             
-              % Check the refractive index is correct
+            % Check the refractive index is correct
             if ~(self.nrefr == old_refr ) & ...
-                ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ...
-                ~isa( surf, 'ScreenGeneric' ) & ~isa( surf, 'Aperture' ) 
-            
-				warning('OptoMetrika:refrIndexMismatch',...
+                    ~isa( surf, 'Retina' ) & ~isa( surf, 'Screen' ) & ...
+                    ~isa( surf, 'ScreenGeneric' ) & ~isa( surf, 'Aperture' )
+                
+                warning('OptoMetrika:refrIndexMismatch',...
                     ['Refractive Index of Ray and Optical element mismatch. \n' ...
-                     'Was changed to Value expected at element entry.\n' ]);
-                self.nrefr = old_refr; 
+                    'Was changed to Value expected at element entry.\n' ]);
+                self.nrefr = old_refr;
                 rays_out.nrefr = new_refr;
             end
-
+            
             % calculate refraction
             switch( class( surf ) )
-                case { 'Aperture', 'Screen', 'Retina','ScreenGeneric' } 
-                case { 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Sphere' 'Lens' }
+                case { 'Aperture', 'Screen', 'Retina','ScreenGeneric' }
+                case { 'SurfaceGeneric' 'GeneralLens' 'AsphericLens' 'FresnelLens' 'ConeLens' 'CylinderLens' 'Plane' 'Sphere' 'Lens' }
                     % calculate refraction (Snell's law)
-
+                    
                     inside_already = ( ~miss ) & ( abs( rays_out.nrefr - old_refr ) > 1e-12 ); % rays that are already inside the surface (entered it previously)
                     rays_out.nrefr( ~miss ) = new_refr( ~miss ); % change refractive index of the rays that crossed the surface
                     if sum( inside_already ) ~= 0 % second intersections in a cylinder
                         rays_out.nrefr( inside_already ) = old_refr( inside_already ); % use old refractive index for those rays that are crossing the second surface
                     end
-            
-%                     if isa( surf, 'FresnelLens' ) % remove rays coming to the Fresnel surface from the inside (through the cylindrical walls).
-%                         bads = cs1 < 0;
-%                         rays_out.I( bads ) = 0;
-%                         rays_out.r( bads, : ) = Inf * rays_out.r( bads, : );
-%                     end
+                    
+                    %                     if isa( surf, 'FresnelLens' ) % remove rays coming to the Fresnel surface from the inside (through the cylindrical walls).
+                    %                         bads = cs1 < 0;
+                    %                         rays_out.I( bads ) = 0;
+                    %                         rays_out.r( bads, : ) = Inf * rays_out.r( bads, : );
+                    %                     end
                     
                     if strcmp( med1, 'mirror' ) || strcmp( med2, 'mirror' ) % if a mirror
                         rays_out.n = self.n - 2 * repmat( cs1, 1, 3 ) .* nrms; % Snell's law of reflection
@@ -924,14 +951,14 @@ classdef Rays
                         % handle total internal reflection
                         tot = find(imag( cs2 ) ~= 0);
                         % rays_out.n( tot, : ) = 0; % zero direction for such rays
-                        if(~isempty(tot))   
+                        if(~isempty(tot))
                             rays_out.n( tot, : ) = self.n( tot, : ) - 2 * repmat( tmp( tot ), 1, 3 ) .* nrms( tot, : ); % Snell's law of reflection
                             refraction_loss( tot ) = 0; %1;
                             rays_out.nrefr( tot ) = refrindx( self.w( tot ), med1 ); % refractive index before the surface
                         end
                         
                         rays_out.I( ~miss ) = ( 1 - refraction_loss( ~miss ) ) .* rays_out.I( ~miss ); % intensity of the outcoming rays
-                    end                     
+                    end
                 otherwise
                     error( [ 'Surface ' class( surf ) ' is not defined!' ] );
             end
@@ -961,9 +988,9 @@ classdef Rays
             rc.nrefr = self.nrefr;    % a vector of current refractive indices
             rc.att = self.att;       % a vector of ray attenuations
             rc.color = self.color;   % color to draw the bundle rays
-            rc.cnt = self.cnt;      % number of rays in the bundle   
-            rc.opl = self.opl;      
-            rc.gpl = self.gpl;     
+            rc.cnt = self.cnt;      % number of rays in the bundle
+            rc.opl = self.opl;
+            rc.gpl = self.gpl;
         end
         
         
@@ -978,7 +1005,7 @@ classdef Rays
             self.nrefr = [ self.nrefr; rays.nrefr ];
             self.att = [ self.att; rays.att ];
             self.color = [ self.color; rays.color ];
-            self.cnt = self.cnt + rays.cnt;                
+            self.cnt = self.cnt + rays.cnt;
         end
         
         function rays = subset( self, inds )
@@ -1010,7 +1037,7 @@ classdef Rays
             self.att( ind, : ) = [];
             self.cnt = self.cnt - sum( ind );
         end
-                            
+        
         function [ av, dv, nrays ] = stat( self )
             % calculate mean and standard deviation of the rays startingpoints
             vis = self.I ~= 0; % visible rays
@@ -1019,7 +1046,7 @@ classdef Rays
             dv = sqrt( sum( self.I( vis ) .* sum( ( self.r( vis, : ) - repmat( av, sum( vis ), 1 ) ).^2, 2 ) ) ./ norm );
             nrays = sum( vis );
         end
-
+        
         function [ x0, cv, ax, ang, nrays ] = stat_ellipse( self )
             % calculate parameters of an ellips covering the projection of
             % the rays startingpoints onto YZ plane
@@ -1028,7 +1055,7 @@ classdef Rays
             [ x0, cv, ax, ang ] = ellipse_fit( self.r( vis, 2:3 ) );
             %[ x0, cv, ax, ang ] = ellipse_fit( self.r( vis, : ) );
         end
-
+        
         function [ mu, sigma, lambda, angle, nrays ] = stat_exGaussian( self )
             % calculate parameters of the exponentially modified Gaussian distribution (EMG) fitting the rays startingpoints
             vis = self.I ~= 0; % visible rays
@@ -1054,7 +1081,7 @@ classdef Rays
             r2 = sum( ( t - repmat( proj, 1, 3 ) .* self.n ).^2 );
         end
         
-         function [ ndev, ndev_max ] = stat_div( self )
+        function [ ndev, ndev_max ] = stat_div( self )
             % calculate rays divergence, avg and max
             
             ind = (self.I ~= 0);
@@ -1085,8 +1112,8 @@ classdef Rays
             osr = tmp .* repmat( dot( sr, tmp, 2 ), 1, 3 );
             sr = sr - osr; % leave only the r component orthogonal to the average bundle direction.
             osr = sum( osr .* repI ) / sum( self.I ); % bundle origin along the bundle direction
-            rav = sum( sr .* repI ) / sum( self.I ); % average bundle origin 
-
+            rav = sum( sr .* repI ) / sum( self.I ); % average bundle origin
+            
             if flag == 2 % search for the plane with the smallest cross-section
                 scnt = sum( ind );
                 if exist( 'fminunc', 'file' ) % requires optimization toolbox
@@ -1123,13 +1150,13 @@ classdef Rays
                 rf = dr + repmat( d ./ sqrt( 1 - dp.^2 ), 1, 3 ) .* sn;
                 arf = mean( rf ); % average vector
                 ff = sum( si .* sqrt( sum( ( rf - repmat( arf, size( rf, 1 ), 1 ) ).^2, 2 ) ) ) / ssi; % weighted average bundle size on the focal plane
-            end               
+            end
         end
         
         function [ mtf, fr ] = MTF( self, dist, fr )
             if nargin < 3
                 fr = linspace( 0, 50, 100 ); % frequencies to calculate MTF at
-            end           
+            end
             ind = self.I ~= 0;
             sn = self.n( ind, : );
             sr = self.r( ind, : );
@@ -1155,7 +1182,7 @@ classdef Rays
             mtf = sum( cos( 2 * pi * lsfZ * fr ) );
             mtf = mtf / mtf( 1 );
         end
-   end
+    end
 end
 
 

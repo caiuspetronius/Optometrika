@@ -1,0 +1,1 @@
+function d = dist2_generic( l, r0, e, surf )  rend = r0 + l * e; % the ray's end  d = ( rend( :, 1 ) - surf.eval( rend( :, 2 ), rend( :, 3 )) ).^2;end

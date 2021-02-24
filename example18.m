@@ -1,7 +1,7 @@
 function example18()
 % Analyze complete geometrical OPL error and offset error 
 % for a beam that passes through two non-wedged windows
-% that are tilted +45° and -45 degree.
+% that are tilted +45? and -45 degree.
 % A. Schultze 2020-10-05
 
 
@@ -50,7 +50,7 @@ bench.append( screenwf );
 ref_bench.append( screenwf );
 
 %variation in position
-rays_in = Rays( 5, 'source', [ 1 0 0 ], [ 1 0 0 ], 10e-6, 'square',medium,1064e-9,[],0);
+rays_in = Rays( 5000, 'source', [ 1 0 0 ], [ 1 0 0 ], 10e-6, 'square',medium,1064e-9,[],0);
 rays_out = bench.trace_recursive( rays_in );
 rays2_out = ref_bench.trace( rays_in );
 bench.draw(rays_out, 'lines');
