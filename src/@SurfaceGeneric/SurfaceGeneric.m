@@ -13,13 +13,15 @@ classdef SurfaceGeneric < handle
     % (radians) about the 1x3 rotation axis, inherited by derived classes.
     
     
+    % For 'spherical' the center of the sphere is at [0,0,0]
+    % Definition: phi-azimuth- [-pi..pi],theta-elevation- [-pi/2..pi/2]
     
     
     
     properties   % public access
         r = [ 0 0 0 ];  % location vector
         dim =[];        %dim vector (cart or polar) [outer inner]
-        R = []; %legacy unused
+        R = []; 
         
         glass  = { 'vacuum' 'vacuum' }; % material in front and behind the surface
         
@@ -38,7 +40,13 @@ classdef SurfaceGeneric < handle
         %additional surface profile term a[-pi..pi,r]
         profile_array_polar = []; %profile (function_handle or 2d array)
         
-        type = 'cart'; % 'polar','cart' -> impact on "draw/plot"
+        type = 'cart'; % 'polar','cart','spherical' defines what type of function
+        %cart: f(x,y)
+        %polar: f(theta, rho)
+        %spherical: f(theta, phi, r)
+        
+        diffdist = 1e-5; %numeric differentiation distance for gradient
+  
         
     end
     
@@ -117,10 +125,20 @@ classdef SurfaceGeneric < handle
         end
         
         function plot( self )
-            y = linspace(-self.dim(1)/2,self.dim(1)/2,20);
-            z = linspace(-self.dim(2)/2,self.dim(2)/2,20);
+            
+             %cartesian
+             %upper and lower limits: -1 / 1
+             y = linspace(-self.dim(1)/2,self.dim(1)/2,20);
+             z = linspace(-self.dim(2)/2,self.dim(2)/2,20); 
+             
             [y,z]=meshgrid(y,z);
-            [x,nrms] = self.eval(y,z);
+
+
+            
+            [x,nrms] = self.eval(y(:),z(:));
+            x= reshape(x,size(y)); %back to mesh
+            nrms= reshape(nrms,[size(y),3]); %back to mesh
+            
             figure();
             subplot(2,2,1);
             surf(y,z,x);hold on;
@@ -147,9 +165,35 @@ classdef SurfaceGeneric < handle
             surf(y,z,x);hold on;
             %quiver3(y,z,x,nrms2(:,:,2),nrms2(:,:,3),nrms2(:,:,1));
             title('profile A(y,z)');
-            %axis equal; %view(90,-60);%normals look v
+            %axis equal; %view(90,-60);%normals look v   
             
+        end
+        
+       function plot_spherical( self )
+             %spherical
+             phi = linspace(-pi,pi,20);
+             theta = linspace(-pi/2,pi/2,20); 
+             
+            [phi ,theta]=meshgrid(phi ,theta);
+            [rr] = self.eval_spherical(phi ,theta);
+            figure();
+            subplot(2,2,1);
+            surf(phi ,theta,rr);hold on;
+            xlabel('phi(az),rad');ylabel('theta(el),rad');
+            colorbar;
+            title('total');
+
             
+            subplot(2,2,3);
+            [rr] = self.eval_shape_spherical(phi ,theta);
+            surf(phi ,theta,rr);hold on;
+            title('shape f(y,z)');
+            xlabel('phi(az),rad');ylabel('theta(el),rad');
+            subplot(2,2,4);
+            [rr] = self.eval_profile_spherical(phi ,theta);
+            surf(phi ,theta,rr);hold on;
+            title('profile A(y,z)'); 
+            xlabel('phi(az),rad');ylabel('theta(el),rad');
         end
         
         
@@ -160,12 +204,19 @@ classdef SurfaceGeneric < handle
                 color = [ 1 1 1 .5 ];
             end
             
+            if ~isempty(self.R)
+               self.type='spherical'; 
+            end
+            
             switch self.type
                 case 'cart'
                     gridsize = 50;
                     y = linspace( -self.dim(1) / 2, self.dim(1) / 2, gridsize );
                     z = linspace( -self.dim(2) / 2, self.dim(2) / 2, gridsize );
                     [ y, z ] = meshgrid( y, z );
+
+                    x = self.eval( y(:), z(:) );
+                    x = reshape(x,size(y));
                 case 'polar'
                     nrad = 50;
                     rad = linspace( 0, self.dim(1) / 2, nrad );
@@ -173,9 +224,18 @@ classdef SurfaceGeneric < handle
                     ang = linspace( 0, 2 * pi, nang );
                     [ ang, rad ] = meshgrid( ang, rad );
                     [ y, z ] = pol2cart( ang, rad );
+                    x = self.eval( y, z );
+                case 'spherical'
+                    nphi = 50;
+                    ntheta = 50;
+                    phi = linspace( -pi/2,pi/2, nphi );
+                    theta = linspace( -pi,pi, ntheta );
+                    [ phi, theta ] = meshgrid( phi, theta );
+                    rr = self.eval_spherical( phi, theta )+self.R;
+                    [y,z,x] = sph2cart(phi,theta,rr);
             end %switch
             
-            x = self.eval( y, z );
+            
             S = [ x(:) y(:) z(:) ];
             
             % rotate and shift
@@ -196,11 +256,31 @@ classdef SurfaceGeneric < handle
         function profile_set(self, par)
             self.profile_array = par;
         end
+     
+        
+        function [x]=eval_shape_spherical(self, varphi_q,theta_q)
+            x = self.shape_funch(theta_q,varphi_q);
+            %remove imaginary numbers
+            x(imag(x)~=0)=1e20;
+        end
+        
+        function [x]=eval_profile_spherical(self,varphi_q,theta_q)
+               if ~isempty(self.profile_array)
+                    n_phi = size(self.profile_array,2);
+                    n_theta = size(self.profile_array,1);
+                    phi_t=linspace(-pi,pi,n_phi); %az
+                    theta_t=linspace(-pi/2,pi/2,n_theta); %el
+                    x= interp2(phi_t,theta_t,self.profile_array,theta_q,varphi_q,'linear',0);
+               else
+                    x=zeros(size(varphi_q));
+               end
+        end
+        
         
         function [x]=eval_shape(self, yq,zq)
             x = -self.shape_funch(yq*2/self.dim(1),zq*2/self.dim(2));
             %remove imaginary numbers
-             x(imag(x)~=0)=Inf;
+             x(imag(x)~=0)=NaN;
         end
         %return profile for unit -1...1
         function [x]=eval_profile_unit(self, yq,zq)
@@ -209,11 +289,13 @@ classdef SurfaceGeneric < handle
                     nz = size(self.profile_array,1);
                     yt=linspace(-1,1,ny);
                     zt=linspace(-1,1,nz);
-                    x= interp2(yt,zt,self.profile_array,yq,zq,'linear',0);
+                    x= interp2(yt,zt,self.profile_array,yq,zq,'makima');
+                    %alternative: switch to griddedInterpolant for more
+                    %control on intra/extrapolation
+                    
                else
                     x=zeros(size(yq));
                end
-            
         end
         
         function [x]=eval_profile(self, yq,zq)
@@ -222,44 +304,89 @@ classdef SurfaceGeneric < handle
                 nz = size(self.profile_array,1);
                 yt=linspace(-1,1,ny);
                 zt=linspace(-1,1,nz);
-                x= interp2(yt,zt,self.profile_array,yq*2/self.dim(1),zq*2/self.dim(2),'linear',0);         
+                x= interp2(yt,zt,self.profile_array,yq*2/self.dim(1),zq*2/self.dim(2),'makima');         
             else
                 x=zeros(size(yq));
             end
         end
         
-        function [x,nrms] = eval(self,yq,zq)
-            if nargout>1 %only calculated when asked
-                [x1]=eval_shape(self, yq,zq);
-                [x2]=eval_profile(self, yq,zq);
-                x=x1+x2;       
-
-                %grid for generating 2d surface for gradient (nrms)
-                gridsize = 1e3;
-                yt=linspace(-1,1,gridsize);
-                zt=linspace(-1,1,gridsize);
-                [yyt,zzt]= meshgrid(yt,zt);
-                x_grid = self.shape_funch(yyt,zzt) + ...
-                     self.eval_profile_unit(yyt,zzt) ;
-                x_grid(imag(x_grid)~=0)=Inf; 
-                 
-                [gy,gz] = gradient(x_grid,2/(gridsize-1));
-                %Remark: The gradient depends on correct scaling with
-                %regards to y/z. When use a factor is needed.
-                nrms_y = -interp2(yt,zt,gy,yq*2/self.dim(1),zq*2/self.dim(2),'cubic',0)./(self.dim(1)/2);
-                nrms_z = -interp2(yt,zt,gz,yq*2/self.dim(1),zq*2/self.dim(2),'cubic',0)./(self.dim(2)/2);
-                nrms = squeeze(cat(3,ones(size(nrms_y)),nrms_y,nrms_z));
-                
-               
-                nrms = nrms./vecnorm(nrms,2,ndims(nrms));
-
+        function [r] = eval_spherical(self, varphi_q,theta_q)    
+            [r1]=eval_profile_spherical(self,varphi_q,theta_q);
+            [r2]=eval_shape_spherical(self,varphi_q,theta_q);
+            r=r1+r2;
+        end
+        
+        
+        function [x,nrms] = eval(self,yq,zq,sign_dirx)
             
+            % cart to spherical
+            if ~isempty(self.R)
+                
+                
+                if ~exist('sign_dirx','var')
+                    sign_dirx=1;
+                end
+                %when calculating the the spherical coordinate x
+                %based on r there might be a slight error
+                %for highly deviated surfaces
+                %because it is performed for ideal sphere
+                       
+                %there are two solutions for intersection
+                x=-sign_dirx.*sqrt(self.R.^2-yq.^2-zq.^2);
+                x(imag(x)~=0)=NaN;
+                
+                theta= asin(zq./self.R); %el
+                phi = atan2(yq,x);      %az
+                
+                %theta= asin(x./self.R); %el
+                %phi = atan2(yq,x);      %az
+                
+                phi(imag(phi)~=0)=NaN;
+                theta(imag(theta)~=0)=NaN;
+                
+                [rr] = eval_spherical(self, phi,theta);
+                [x,~,~] = sph2cart(phi,theta,rr+self.R);
+        
             else
+                %cartesian
                 [x1]=eval_shape(self, yq,zq);
                 [x2]=eval_profile(self, yq,zq);
                 x=x1+x2;
+                
             end
             
+               if nargout>1 %only calculated when asked
+                %cartesian           
+                 nrms =eval_nrms(self,yq,zq);           
+               end
+            
+        end
+        
+        function [nrms] = eval_nrms(self,yq,zq)
+                % calculate the normal vectors for 2 point pairs along x and y
+                % normal vector is tangential using numerical
+                % differentiation
+                
+                y1=yq+self.diffdist;
+                y2=yq-self.diffdist;
+                z1=zq+self.diffdist;
+                z2=zq-self.diffdist;
+                
+                x= self.eval(yq,zq);
+                x1=self.eval(y1,zq);
+                x2=self.eval(y2,zq);
+                x3=self.eval(yq,z1);
+                x4=self.eval(yq,z2);
+                
+                v1=[x1,y1,zq];
+                v2=[x2,y2,zq];
+                v3=[x3,yq,z1];
+                v4=[x4,yq,z2];
+
+                vy = v2-v1;
+                vz = v4-v3;
+                nrms = cross(vz,vy);
+                nrms = -nrms./vecnorm(nrms,2,2);
         end
         
         

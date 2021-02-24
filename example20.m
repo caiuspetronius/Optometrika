@@ -8,7 +8,7 @@ close all;
 
 tic;
 
-for i=1:3
+for i=1:4
     bench = Bench;
     switch i
         case 1
@@ -41,7 +41,21 @@ for i=1:3
             mirror = SurfaceGeneric([30 00 0],[40 40],fun_sph,{ 'air' 'mirror' } );
             mirror.plot();
             suptitle('Sphere');
-            
+        case 5
+            %sphere in spherical coordinates
+             mirror = SurfaceGeneric([30 00 0],[40 40],@(x,y) 0.*x+0*y,{ 'air' 'mirror' } );
+             
+             
+             prof = 3*[0 0 0 0;0 0 0 0; 0 1 1 0; 0 1 1 0; 0 1 0 0; 0 1 0 0; 0 1 1 0; 0 1 1 0;0 1 0 0;0 1 0 0; 0 1 1 0; 0 1 1 0; 0 0 0 0;0 0 0 0]; %letter E
+             mirror.profile_set(prof);
+             
+             mirror.R = 20; % switch to 'spherical'
+             mirror.plot();
+             mirror.plot_spherical();
+             
+             
+             
+             
     end %switch
     
     
@@ -51,7 +65,7 @@ for i=1:3
     bench.append( screenwf );
     
     % create collimated rays
-    nrays = 30;
+    nrays = 150;
     rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 16, 'hexagonal','air' );
     toc;
     rays_through = bench.trace( rays_in );    % repeat to get the min spread rays
