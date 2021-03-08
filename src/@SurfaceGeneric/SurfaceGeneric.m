@@ -35,10 +35,14 @@ classdef SurfaceGeneric < handle
         shape_funch_polar = [] % the corresponding handle
         
         %additional surface profile term a[-1..1,-1..1]
+         %A[y,z] for cartesian
         profile_array = []; %profile (function_handle or 2d array)
         
+                             
         %additional surface profile term a[-pi..pi,r]
         profile_array_polar = []; %profile (function_handle or 2d array)
+        %A[az,el] for spherical
+             
         
         type = 'cart'; % 'polar','cart','spherical' defines what type of function
         %cart: f(x,y)
@@ -226,13 +230,22 @@ classdef SurfaceGeneric < handle
                     [ y, z ] = pol2cart( ang, rad );
                     x = self.eval( y, z );
                 case 'spherical'
-                    nphi = 50;
-                    ntheta = 50;
-                    phi = linspace( -pi/2,pi/2, nphi );
-                    theta = linspace( -pi,pi, ntheta );
+                    nphi = 51;
+                    ntheta = 51;
+                    phi = linspace( -pi,pi, nphi );
+                    theta = linspace( -pi/2,pi/2, ntheta );
                     [ phi, theta ] = meshgrid( phi, theta );
+                    %rotate so that (0,0) is towards -x, the default
+                    
+                    %phi=0;theta=0;
                     rr = self.eval_spherical( phi, theta )+self.R;
-                    [y,z,x] = sph2cart(phi,theta,rr);
+                  
+                    %[y,z,x] = sph2cart(phi,theta,rr);  
+                    [x,y,z]=sph2cart(phi,theta,rr);  
+                    %Rotate around z by 180? (face towards -x)
+                    x=-x;
+                    y=-y;           
+                    
             end %switch
             
             
@@ -266,11 +279,11 @@ classdef SurfaceGeneric < handle
         
         function [x]=eval_profile_spherical(self,varphi_q,theta_q)
                if ~isempty(self.profile_array)
-                    n_phi = size(self.profile_array,2);
-                    n_theta = size(self.profile_array,1);
+                    n_phi = size(self.profile_array,1); %az
+                    n_theta = size(self.profile_array,2); %el
                     phi_t=linspace(-pi,pi,n_phi); %az
                     theta_t=linspace(-pi/2,pi/2,n_theta); %el
-                    x= interp2(phi_t,theta_t,self.profile_array,theta_q,varphi_q,'linear',0);
+                    x= interp2(phi_t',theta_t',self.profile_array',varphi_q,theta_q,'linear',0);
                else
                     x=zeros(size(varphi_q));
                end
@@ -332,11 +345,13 @@ classdef SurfaceGeneric < handle
                 %because it is performed for ideal sphere
                        
                 %there are two solutions for intersection
-                x=-sign_dirx.*sqrt(self.R.^2-yq.^2-zq.^2);
-                x(imag(x)~=0)=NaN;
+                x1=sign_dirx.*sqrt(self.R.^2-yq.^2-zq.^2);
+                x1(imag(x1)~=0)=NaN;
+                
+        
                 
                 theta= asin(zq./self.R); %el
-                phi = atan2(yq,x);      %az
+                phi = atan2(yq,x1);      %az
                 
                 %theta= asin(x./self.R); %el
                 %phi = atan2(yq,x);      %az
@@ -345,7 +360,14 @@ classdef SurfaceGeneric < handle
                 theta(imag(theta)~=0)=NaN;
                 
                 [rr] = eval_spherical(self, phi,theta);
-                [x,~,~] = sph2cart(phi,theta,rr+self.R);
+                %[x,~,~] = sph2cart(phi,theta,rr+self.R);
+                
+                [x,~,~] = sph2cart(phi,theta,rr+self.R);                   
+                %Rotate around z by 180? (face towards -x)
+                x=-x;
+   
+                
+                
         
             else
                 %cartesian

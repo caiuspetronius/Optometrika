@@ -8,7 +8,7 @@ close all;
 
 tic;
 
-for i=1:4
+for i=1:5
     bench = Bench;
     switch i
         case 1
@@ -45,8 +45,12 @@ for i=1:4
             %sphere in spherical coordinates
              mirror = SurfaceGeneric([30 00 0],[40 40],@(x,y) 0.*x+0*y,{ 'air' 'mirror' } );
              
+             %A[az,el] for spherical
+             prof = 0*zeros(19);
+             prof(10+3,10)=5;
+             prof(10,10)=0.5;
+             prof(10-3,10)=5;
              
-             prof = 3*[0 0 0 0;0 0 0 0; 0 1 1 0; 0 1 1 0; 0 1 0 0; 0 1 0 0; 0 1 1 0; 0 1 1 0;0 1 0 0;0 1 0 0; 0 1 1 0; 0 1 1 0; 0 0 0 0;0 0 0 0]; %letter E
              mirror.profile_set(prof);
              
              mirror.R = 20; % switch to 'spherical'
@@ -65,11 +69,10 @@ for i=1:4
     bench.append( screenwf );
     
     % create collimated rays
-    nrays = 150;
+    nrays = 100;
     rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 16, 'hexagonal','air' );
     toc;
     rays_through = bench.trace( rays_in );    % repeat to get the min spread rays
-    toc;
     bench.draw( rays_through, 'lines' );  % display everything, scale arrow length 2x
     
     figure();
