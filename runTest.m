@@ -34,13 +34,6 @@ expSolution = 0.003573243838131;
 verifyEqual(testCase,actSolution,expSolution,'AbsTol',expSolution/1e4)
 end
 
-function testExample2b(testCase)
-actSolution = example2b();
-expSolution = 1.137225471691192e-04;
-verifyEqual(testCase,actSolution,expSolution,'AbsTol',expSolution/1e4)
-
-end
-
 
 function testExample3(testCase)
 [act1,act2,act3] = example3();
