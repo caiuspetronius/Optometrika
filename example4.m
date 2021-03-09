@@ -1,9 +1,13 @@
-function example4()
+function img=example4()
 %
 % test a ring lens with the cosine surface profile defined in coslens.m
 %
 % Copyright: Yury Petrov, 2016
 %
+
+
+%Add src to PATH
+startup;
 
 % create a container for optical elements (Bench class)
 bench = Bench;
@@ -35,7 +39,7 @@ bench.append( screen );
 
 % create collimated rays with some slant
 nrays = 500;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 68, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 68, 'hexagonal','air' );
 
 tic;
 fprintf( 'Tracing rays... ' );
@@ -46,10 +50,12 @@ bench.draw( rays_through, 'arrows' );  % display everything, the other draw opti
 
 % get the screen image in high resolution
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 58, 'hexagonal','air' );
 bench.trace( rays_in, 0 );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( kron( screen.image, ones( 3 ) ), [] );
 
 toc;
+
+img=screen.image;
 end

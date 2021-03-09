@@ -5,6 +5,9 @@ function example10()
 % Copyright: Yury Petrov, 2016
 %
 
+%Add src to PATH
+startup;
+
 D = 40; % cylinder diameter
 h = 20; % cylinder height
 
@@ -48,7 +51,7 @@ bench.append( screen );
 
 % create divergent rays
 nrays = 100;
-rays_in = Rays( nrays, 'source', [ 0 0 0 ], [ 1 0 0 ], 2., 'hexagonal' );
+rays_in = Rays( nrays, 'source', [ 0 0 0 ], [ 1 0 0 ], 2., 'hexagonal','air' );
 
 rays_through = bench.trace( rays_in, 0 ); % trace the rays, enable tracing rays that miss some bench elements by setting the second input parameter to 0
 
