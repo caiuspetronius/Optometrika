@@ -60,4 +60,4 @@ example20.m: demonstrates arbitrary topology surface
 ## To acknowledge use of this software, please cite the following publication:
 
 A. Schultze and Y. Petrov. OptoMetrika -Open source ray tracer for MATLAB. 2021.
-[DOI: 10.13140/RG.2.2.10027.98081/1](https://dx.doi.org/10.13140/RG.2.2.10027.98081/2)
+[DOI: 10.13140/RG.2.2.10027.98081/2](https://dx.doi.org/10.13140/RG.2.2.10027.98081/2)
