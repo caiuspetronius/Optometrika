@@ -5,6 +5,9 @@ function example11()
 % Copyright: Yury Petrov, 2016
 %
 
+%Add src to PATH
+startup;
+
 bench = Bench;
 
 eye = Eye;

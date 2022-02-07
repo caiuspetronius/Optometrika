@@ -6,6 +6,8 @@ function focal = example1()
 % Copyright: Yury Petrov, 2016
 %
 
+%Add src to PATH
+startup;
 % create a container for optical elements (Bench class)
 bench = Bench;
 
@@ -16,9 +18,9 @@ aper = Aperture( [ 5 0 0 ], [ 25 80 ] ); % circular aperture
 bench.append( aper );
 
 % front lens surface
-lens1 = Lens( [ 40 0 0 ], 58, 40, -1, { 'air' 'bk7' } ); % parabolic surface
+lens1 = Lens( [ 40 0 0 ], 58, 40, -1, { 'air' 'N-BAK 4' } ); % parabolic surface
 % back lens surface
-lens2 = Lens( [ 60 0 0 ], 58, -70, -3, { 'bk7' 'air' } ); % concave hyperbolic surface
+lens2 = Lens( [ 60 0 0 ], 58, -70, -3, { 'N-BAK 4' 'air' } ); % concave hyperbolic surface
 bench.append( { lens1, lens2 } );
 
 % screen
@@ -30,7 +32,7 @@ bench.append( screen );
 % create some rays
 nrays = 500;
 % rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 -0.1 0 ], 58, 'hexagonal' );
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal','air' );
 
 tic;
 
@@ -70,7 +72,7 @@ scatter3( focal, 0, 0, 'y*' ); % draw the standard deviation focal point as a ye
 
 % get the screen image in high resolution for both types of focal points
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 58, 'hexagonal','air' );
 bench.trace( rays_in );
 figure( 'Name', 'Image on the screen, convergence focal point', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

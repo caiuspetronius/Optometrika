@@ -5,6 +5,9 @@ function example15()
 % Copyright: Yury Petrov, 2017
 %
 
+%Add src to PATH
+startup;
+
 R = 1;  % spherical lens radius
 nLenses = 19;
 D = 10 * R; % substrate plate diameter
@@ -14,7 +17,7 @@ h = 0.5;      % substrate plate height
 bench = Bench;
 
 % get hexagonal locations from the Rays function with the 'hexagonal' pattern
-locs = Rays( nLenses, 'collimated', [ 10 0 0 ], [ 1 0 0 ], 7 * R, 'hexagonal' );
+locs = Rays( nLenses, 'collimated', [ 10 0 0 ], [ 1 0 0 ], 7 * R, 'hexagonal','air' );
 
 for i = 1 : length( locs.r )
     lens = Lens( locs.r( i, : ), 2 * R - 1e-6, R, 0, { 'air' 'pmma' } ); % a half-sphere
@@ -31,12 +34,12 @@ bench.append( screen );
 
 % create some rays
 nrays = 300;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 10 * R, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 10 * R, 'hexagonal','air' );
 rays_out = bench.trace( rays_in, 0 );  % must use 0 as the last argument to consider rays missing a given microlens as candidates for hitting another one
 bench.draw( rays_out, 'rays' );
 
 % get a high-res image on the screen
-rays_in = Rays( 100 * nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 10 * R, 'hexagonal' );
+rays_in = Rays( 100 * nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 10 * R, 'hexagonal','air' );
 rays_out = bench.trace( rays_in, 0 );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

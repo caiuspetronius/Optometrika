@@ -5,6 +5,10 @@ function example8()
 % Copyright: Yury Petrov, 2016
 %
 
+
+%Add src to PATH
+startup;
+
 % create a container for optical elements (Bench class)
 bench = Bench;
 
@@ -24,18 +28,18 @@ bench.append( screen );
 
 % create collimated rays with some slant
 nrays = 500;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal','air' );
 
 tic;
 fprintf( 'Tracing rays... ' );
 rays_through = bench.trace( rays_in );    % repeat to get the min spread rays
-
+toc;
 % draw bench elements and draw rays as arrows
 bench.draw( rays_through );  % display everything, the other draw option is 'lines'
 
 % get the screen image in high resolution
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 30, 'hexagonal','air' );
 bench.trace( rays_in );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

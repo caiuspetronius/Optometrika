@@ -5,10 +5,15 @@ function example7()
 % Copyright: Yury Petrov, 2017
 %
 
+%Add src to PATH
+startup;
+
 % create a container for optical elements (Bench class)
 bench = Bench;
 
 condition = 'fresnel'; % change to 'smooth' to see the original lens or to 'fresnel-sim' to simulate the original lens with a globally smooth Fresnel surface
+
+
 
 % front lens surface
 % This is the simulated aspheric lens surface
@@ -63,7 +68,7 @@ bench.append( screen );
 tic;
 fprintf( 'Tracing rays... ' );
 nrays = 100;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal','air' );
 rays_through = bench.trace( rays_in );
 toc;
 
@@ -72,7 +77,13 @@ bench.draw( rays_through, 'rays' );  % display everything, the other draw option
 figure, imshow( screen.image, [ 0 max( max( screen.image ) ) ] );
 
 % draw the lens for manufacturing
-[ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR', 'Fresnel', lens1 );
+
+if strcmp( condition, 'fresnel' )
+    [ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR', 'Fresnel', lens1 );
+else
+    [ ~, pr ] = draw_lens_engineering( [ 0, x2 - x1 ], [ D D ], [ R R2 ], [ k 0 ], [], 'pmma', [], 'AR'); 
+end
+
 fprintf( 'Engineering drawing saved\n' );
 save lens_profile.mat pr;
 

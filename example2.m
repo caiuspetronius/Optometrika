@@ -1,10 +1,13 @@
-function example2()
+function result=example2()
 %
 % demonstrates the Optometrika's optical model of the human eye
 %
 % Copyright: Yury Petrov, 2016
 %
 
+
+%Add src to PATH
+startup;
 % demonstrate resolution dependence on the pupil diameter
 tic;
 disp( 'Calculating...' );
@@ -25,7 +28,7 @@ for i = 1 : nd
     bench.append( eye );
     
     % create some rays
-    rays_in = Rays( nrays, 'collimated', [ -20 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter, 'hexagonal' );
+    rays_in = Rays( nrays, 'collimated', [ -20 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter, 'hexagonal','air' );
     
     % trace the rays
     rays_through = bench.trace( rays_in );
@@ -51,7 +54,7 @@ eye = Eye( [], pd( mi ) );
 % eye.rotate( [ 0 0 1 ], 20 * pi / 180 );
 bench.append( eye );
 nrays = 40; 
-rays_in = Rays( nrays, 'collimated', [ -20 0 0 ], [ 1 0 0 ], 1.2 * pd( mi ), 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ -20 0 0 ], [ 1 0 0 ], 1.2 * pd( mi ), 'hexagonal','air' );
 rays_in.color( ceil( rays_in.cnt / 2 ), : ) = [ 1 0 0 ]; % draw the central ray in red
 rays_through = bench.trace( rays_in );
 bench.draw( rays_through, 'lines' );
@@ -70,7 +73,7 @@ ld = linspace( 10.610, 9.5, nd ); % tested pupil diameters, mm
 viewing_distance = 140; % mm
 
 % create some rays
-rays_in = Rays( nrays, 'source', [ -(viewing_distance + 13.3) 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter / (viewing_distance + 13.3), 'hexagonal' );
+rays_in = Rays( nrays, 'source', [ -(viewing_distance + 13.3) 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter / (viewing_distance + 13.3), 'hexagonal','air' );
     
 dv = zeros( nd, 1 );
 for i = 1 : nd
@@ -104,11 +107,14 @@ bench = Bench;
 eye = Eye( ld( mi ), pupil_diameter );
 bench.append( eye );
 nrays = 40; 
-rays_in = Rays( nrays, 'source', [ -(viewing_distance + 13.3) 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter / (viewing_distance + 13.3), 'hexagonal' );
+rays_in = Rays( nrays, 'source', [ -(viewing_distance + 13.3) 0 0 ], [ 1 0 0 ], 1.2 * pupil_diameter / (viewing_distance + 13.3), 'hexagonal','air' );
 rays_through = bench.trace( rays_in );
 bench.draw( rays_through, 'lines' );
 
 toc;
+
+
+result = mdv;
 
 end
 

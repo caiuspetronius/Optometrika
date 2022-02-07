@@ -7,6 +7,9 @@ function example14()
 % Copyright: Yury Petrov, 2017
 %
 
+%Add src to PATH
+startup;
+
 % create a container for optical elements (Bench class)
 bench = Bench;
 
@@ -30,7 +33,7 @@ bench.append( screen );
 
 % create some rays
 nrays = 100;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal','air' );
 
 rays_through = bench.trace( rays_in );
 
@@ -40,7 +43,7 @@ bench.draw( rays_through, 'lines' );  % display everything, the other draw optio
 
 % get the screen image in high resolution
 nrays = 10000;
-rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal' );
+rays_in = Rays( nrays, 'collimated', [ 0 0 0 ], [ 1 0 0 ], 50, 'hexagonal','air' );
 bench.trace( rays_in );
 figure( 'Name', 'Image on the screen', 'NumberTitle', 'Off' );
 imshow( screen.image, [] );

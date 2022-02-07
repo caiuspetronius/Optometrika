@@ -5,6 +5,10 @@ function [ dist, ld, dv ] = example3( pupil_diameter )
 % Copyright: Yury Petrov, 2016
 %
 
+
+%Add src to PATH
+startup;
+
 if nargin < 1
     pupil_diameter = 3; % mm, normal illumination
 end
@@ -28,9 +32,9 @@ bench.append( eye );
 for i = 1 : nd
     % create some rays
     if i < nd % diverging rays from a point source
-        rays_in = Rays( nrays, 'source', [ -(dist( i ) - eye.Cornea1x) 0 0 ], [ 1 0 0 ], 1/0.82 * pupil_diameter / ( dist( i ) - eye.Cornea1x ), 'hexagonal' );
+        rays_in = Rays( nrays, 'source', [ -(dist( i ) - eye.Cornea1x) 0 0 ], [ 1 0 0 ], 1/0.82 * pupil_diameter / ( dist( i ) - eye.Cornea1x ), 'hexagonal','air' );
     else % the last point source is at infinity
-        rays_in = Rays( nrays, 'collimated', [ -(dist( i ) - eye.Cornea1x) 0 0 ], [ 1 0 0 ], 1/0.82 * pupil_diameter, 'hexagonal' );
+        rays_in = Rays( nrays, 'collimated', [ -(dist( i ) - eye.Cornea1x) 0 0 ], [ 1 0 0 ], 1/0.82 * pupil_diameter, 'hexagonal','air' );
     end
     
     % find the tightest focus
